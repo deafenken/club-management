@@ -47,7 +47,7 @@ const generate = async () => {
 
   try {
     const start = Date.now()
-    const res = await request.post('/ai/plan', { requirement: requirement.value })
+    const res = await request.post('/ai/plan', { requirement: requirement.value }, { timeout: 170000 })
     elapsed.value = Date.now() - start
     if (res.code === 200) {
       result.value = res.data

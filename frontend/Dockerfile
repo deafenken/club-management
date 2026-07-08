@@ -3,7 +3,8 @@ FROM node:20-alpine AS build
 WORKDIR /app
 # Copy package files first for better layer caching
 COPY package.json package-lock.json ./
-RUN npm ci
+# Use the npmmirror registry (faster/more reliable from CN networks)
+RUN npm config set registry https://registry.npmmirror.com && npm ci
 # Copy source and build
 COPY . .
 RUN npm run build

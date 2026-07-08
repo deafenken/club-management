@@ -258,6 +258,17 @@ public class ApprovalService {
             case "VENUE" -> {
                 VenueBooking b = venueBookingMapper.selectById(businessId);
                 if (b != null) {
+                    if (approved) {
+                        // 批准前再次校验时段冲突，避免两个重叠预约都被批准
+                        long conflict = venueBookingMapper.selectCount(new LambdaQueryWrapper<VenueBooking>()
+                                .eq(VenueBooking::getVenueId, b.getVenueId())
+                                .eq(VenueBooking::getBookingDate, b.getBookingDate())
+                                .eq(VenueBooking::getStatus, "APPROVED")
+                                .ne(VenueBooking::getId, b.getId())
+                                .lt(VenueBooking::getStartTime, b.getEndTime())
+                                .gt(VenueBooking::getEndTime, b.getStartTime()));
+                        if (conflict > 0) throw new RuntimeException("该时段已有其他预约通过，无法批准");
+                    }
                     b.setStatus(approved ? "APPROVED" : "REJECTED");
                     venueBookingMapper.updateById(b);
                 }
@@ -268,12 +279,8 @@ public class ApprovalService {
                     b.setStatus(approved ? "APPROVED" : "REJECTED");
                     resourceBorrowMapper.updateById(b);
                     if (!approved) {
-                        // 驳回时归还库存
-                        ResourceItem item = resourceItemMapper.selectById(b.getItemId());
-                        if (item != null) {
-                            item.setAvailable(item.getAvailable() + b.getQuantity());
-                            resourceItemMapper.updateById(item);
-                        }
+                        // 驳回时归还库存（支持批量 batchItems，避免只回滚首个物资）
+                        restoreResourceInventory(b);
                     }
                 }
             }
@@ -283,6 +290,27 @@ public class ApprovalService {
                     f.setStatus(approved ? "APPROVED" : "REJECTED");
                     fundRecordMapper.updateById(f);
                 }
+            }
+        }
+    }
+
+    /** 驳回物资借用时归还库存（支持批量 batchItems，单件回退到 itemId/quantity） */
+    private void restoreResourceInventory(ResourceBorrow b) {
+        if (b.getBatchItems() != null && !b.getBatchItems().isEmpty()) {
+            com.alibaba.fastjson2.JSONArray items = com.alibaba.fastjson2.JSON.parseArray(b.getBatchItems());
+            for (int i = 0; i < items.size(); i++) {
+                com.alibaba.fastjson2.JSONObject it = items.getJSONObject(i);
+                ResourceItem ri = resourceItemMapper.selectById(it.getLong("itemId"));
+                if (ri != null) {
+                    ri.setAvailable(ri.getAvailable() + it.getIntValue("quantity"));
+                    resourceItemMapper.updateById(ri);
+                }
+            }
+        } else {
+            ResourceItem item = resourceItemMapper.selectById(b.getItemId());
+            if (item != null) {
+                item.setAvailable(item.getAvailable() + b.getQuantity());
+                resourceItemMapper.updateById(item);
             }
         }
     }

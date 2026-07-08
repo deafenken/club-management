@@ -208,6 +208,8 @@ public class BusinessController {
         // 管理员直接通过，社长需审批
         act.setCreatedBy(userId);
         act.setStatus("ADMIN".equals(role) ? "APPROVED" : "PENDING");
+        // 直接通过的活动立即生成签到码，否则永远无法签到
+        if ("APPROVED".equals(act.getStatus())) act.setCheckinCode(RandomUtil.randomNumbers(6));
         act.setEnrolledCount(0); activityMapper.insert(act);
         // 社长创建活动时通知管理员审批
         if ("PENDING".equals(act.getStatus())) {
@@ -240,8 +242,10 @@ public class BusinessController {
         Long aid = Long.valueOf(body.get("activityId").toString());
         Long uid = getCurrentUserId();
         Activity act = activityMapper.selectById(aid);
+        if (act == null) return Result.fail("活动不存在");
         if (!"APPROVED".equals(act.getStatus())) return Result.fail("活动暂未开放报名");
-        if (act.getMaxParticipants() > 0 && act.getEnrolledCount() >= act.getMaxParticipants())
+        if (act.getMaxParticipants() != null && act.getMaxParticipants() > 0
+                && act.getEnrolledCount() != null && act.getEnrolledCount() >= act.getMaxParticipants())
             return Result.fail("报名人数已满");
         if (enrollMapper.selectCount(new LambdaQueryWrapper<ActivityEnroll>()
                 .eq(ActivityEnroll::getActivityId, aid).eq(ActivityEnroll::getUserId, uid)) > 0)
@@ -257,9 +261,12 @@ public class BusinessController {
         Long aid = Long.valueOf(body.get("activityId").toString());
         Long uid = getCurrentUserId();
         Activity act = activityMapper.selectById(aid);
+        if (act == null) return Result.fail("活动不存在");
         if (!"APPROVED".equals(act.getStatus()) && !"ONGOING".equals(act.getStatus()))
             return Result.fail("活动暂未开放签到");
-        if (!body.get("code").toString().equals(act.getCheckinCode())) return Result.fail("签到码错误");
+        Object codeObj = body.get("code");
+        if (codeObj == null) return Result.fail("请输入签到码");
+        if (!codeObj.toString().equals(act.getCheckinCode())) return Result.fail("签到码错误");
         // 验证是否已报名
         if (enrollMapper.selectCount(new LambdaQueryWrapper<ActivityEnroll>()
                 .eq(ActivityEnroll::getActivityId, aid).eq(ActivityEnroll::getUserId, uid)) == 0)
@@ -292,6 +299,9 @@ public class BusinessController {
                 .lt(VenueBooking::getStartTime, booking.getEndTime())
                 .gt(VenueBooking::getEndTime, booking.getStartTime()));
         if (count > 0) return Result.fail("该时段已被占用");
+        if (booking.getStartTime() != null && booking.getEndTime() != null
+                && !booking.getStartTime().isBefore(booking.getEndTime()))
+            return Result.fail("结束时间必须晚于开始时间");
         booking.setStatus("PENDING"); bookingMapper.insert(booking);
         // 通知管理员有新场地预约
         Venue v = venueMapper.selectById(booking.getVenueId());
@@ -304,7 +314,20 @@ public class BusinessController {
     public Result<?> approveVenue(@RequestBody Map<String, Object> body) {
         if (!"ADMIN".equals(getCurrentUserRole())) return Result.fail(403, "权限不足");
         VenueBooking b = bookingMapper.selectById(Long.valueOf(body.get("id").toString()));
-        b.setStatus(Boolean.parseBoolean(body.get("approve").toString()) ? "APPROVED" : "REJECTED");
+        if (b == null) return Result.fail("预约记录不存在");
+        boolean approveVenue = Boolean.parseBoolean(body.get("approve").toString());
+        // 批准前再次校验时段冲突，避免两个重叠预约都被批准（双重预订）
+        if (approveVenue) {
+            long conflict = bookingMapper.selectCount(new LambdaQueryWrapper<VenueBooking>()
+                    .eq(VenueBooking::getVenueId, b.getVenueId())
+                    .eq(VenueBooking::getBookingDate, b.getBookingDate())
+                    .eq(VenueBooking::getStatus, "APPROVED")
+                    .ne(VenueBooking::getId, b.getId())
+                    .lt(VenueBooking::getStartTime, b.getEndTime())
+                    .gt(VenueBooking::getEndTime, b.getStartTime()));
+            if (conflict > 0) return Result.fail("该时段已有其他预约通过，无法重复批准");
+        }
+        b.setStatus(approveVenue ? "APPROVED" : "REJECTED");
         bookingMapper.updateById(b);
         // 通知预约人
         Venue venue = venueMapper.selectById(b.getVenueId());
@@ -362,6 +385,8 @@ public class BusinessController {
     public Result<?> borrowResource(@RequestBody ResourceBorrow borrow) {
         borrow.setUserId(getCurrentUserId()); // 强制使用当前登录用户
         ResourceItem item = itemMapper.selectById(borrow.getItemId());
+        if (item == null) return Result.fail("物资不存在");
+        if (borrow.getQuantity() == null || borrow.getQuantity() <= 0) return Result.fail("借用数量无效");
         if (item.getAvailable() < borrow.getQuantity()) return Result.fail("库存不足");
         borrow.setStatus("PENDING"); borrowMapper.insert(borrow);
         item.setAvailable(item.getAvailable() - borrow.getQuantity()); itemMapper.updateById(item);
@@ -434,6 +459,9 @@ public class BusinessController {
         Long borrowId = Long.valueOf(body.get("id").toString());
         ResourceBorrow b = borrowMapper.selectById(borrowId);
         if (b == null) return Result.fail("借用记录不存在");
+        if (b.getUserId() == null || (!b.getUserId().equals(getCurrentUserId())
+                && !"ADMIN".equals(getCurrentUserRole())))
+            return Result.fail(403, "无权归还他人借用");
         if (!"APPROVED".equals(b.getStatus()) && !"BORROWING".equals(b.getStatus()))
             return Result.fail("当前状态不允许归还");
         b.setStatus("RETURNED");
@@ -487,6 +515,20 @@ public class BusinessController {
     }
     @PostMapping("/fund")
     public Result<?> addFund(@RequestBody FundRecord fund) {
+        String role = getCurrentUserRole();
+        Long uid = getCurrentUserId();
+        if (fund.getClubId() == null) return Result.fail("请选择社团");
+        if (!"ADMIN".equals(role)) {
+            Club club = clubMapper.selectById(fund.getClubId());
+            if (club == null) return Result.fail("社团不存在");
+            boolean isPresident = uid != null && uid.equals(club.getPresidentId());
+            boolean isMember = clubMemberMapper.selectCount(new LambdaQueryWrapper<ClubMember>()
+                    .eq(ClubMember::getClubId, fund.getClubId())
+                    .eq(ClubMember::getUserId, uid)
+                    .eq(ClubMember::getStatus, 1)) > 0;
+            if (!isPresident && !isMember) return Result.fail(403, "仅本社团成员可提交经费申请");
+        }
+        fund.setApplicantId(uid);
         fund.setStatus("PENDING"); fundMapper.insert(fund);
         // 通知管理员有新经费申请
         Club fc = clubMapper.selectById(fund.getClubId());
@@ -527,9 +569,12 @@ public class BusinessController {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (principal instanceof Long) announcement.setCreatedBy((Long) principal);
         announcementMapper.insert(announcement);
-        // 通知所有用户
-        List<User> allUsers = userMapper.selectList(null);
-        List<Long> userIds = allUsers.stream().map(User::getId).toList();
+        // 按目标范围推送：非 ALL 时仅推送对应角色
+        String target = announcement.getTarget();
+        List<User> recipients = (target == null || target.isEmpty() || "ALL".equals(target))
+                ? userMapper.selectList(null)
+                : userMapper.selectList(new LambdaQueryWrapper<User>().eq(User::getRole, target));
+        List<Long> userIds = recipients.stream().map(User::getId).toList();
         notificationService.notifyBatch(userIds, "新公告",
                 "管理员发布了新公告：「" + announcement.getTitle() + "」", "ANNOUNCEMENT");
         return Result.ok("公告发布成功");
@@ -625,7 +670,7 @@ public class BusinessController {
                 pendingItems.add(Map.of(
                     "id", f.getId(), "appType", "FUND",
                     "type", "经费审批", "name", club != null ? club.getName() : "经费",
-                    "applicant", "¥" + String.format("%.0f", f.getAmount()) + " · " + (f.getCategory() != null ? f.getCategory() : ""),
+                    "applicant", "¥" + (f.getAmount() != null ? f.getAmount().stripTrailingZeros().toPlainString() : "0") + " · " + (f.getCategory() != null ? f.getCategory() : ""),
                     "time", timeAgo(f.getCreateTime()),
                     "color", "#ff4d4f"
                 ));

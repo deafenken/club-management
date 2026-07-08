@@ -14,6 +14,12 @@ services:
       - mysql-data:/var/lib/mysql
       - ./sql/init.sql:/tmp/init.sql:ro
       - ./sql/migration_v2.sql:/tmp/migration_v2.sql:ro
+      - ./sql/upgrade_notification.sql:/tmp/upgrade_notification.sql:ro
+      - ./sql/seed_more.sql:/tmp/seed_more.sql:ro
+      - ./sql/seed_users.sql:/tmp/seed_users.sql:ro
+      - ./sql/seed_approved_data.sql:/tmp/seed_approved_data.sql:ro
+      - ./sql/seed_demo_applications.sql:/tmp/seed_demo_applications.sql:ro
+      - ./sql/fix_phones.sql:/tmp/fix_phones.sql:ro
       - ./sql/docker-init.sh:/docker-entrypoint-initdb.d/01-init.sh
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --default-authentication-plugin=mysql_native_password
     healthcheck:

@@ -1,6 +1,6 @@
 -- 批量创建用户 + 分配社团成员（让数据更真实）
 -- 密码统一 123456，BCrypt hash
-SET @pwd = '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy';
+SET @pwd = '$2a$10$yt1kw9Gf5gShfBwpPvBe4.n4ZUD1hItYSTO71PXZzDEgObjMSwz7i';
 
 -- ==================== 新增 48 名学生（总量扩到 60 人） ====================
 INSERT INTO sys_user (username, password, real_name, role, college, status) VALUES

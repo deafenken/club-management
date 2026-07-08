@@ -240,7 +240,12 @@ const submit = async () => {
     const data = {
       ...form,
       borrowMode: borrowMode.value,
-      batchItems: borrowMode.value === 'batch' ? batchItems.value : null
+      // 后端实体字段是 itemId/quantity（单件）与 String 类型的 batchItems（JSON）
+      itemId: borrowMode.value === 'single' ? form.singleItemId : null,
+      quantity: borrowMode.value === 'single' ? form.singleQuantity : null,
+      batchItems: borrowMode.value === 'batch' ? JSON.stringify(batchItems.value) : null,
+      // isValuable 后端是 Integer(0/1)
+      isValuable: form.isValuable ? 1 : 0
     }
     await request.post('/resource/borrow/full', data)
     ElMessage.success('物资借用申请已提交！')

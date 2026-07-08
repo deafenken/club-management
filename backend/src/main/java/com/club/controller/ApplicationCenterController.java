@@ -97,6 +97,9 @@ public class ApplicationCenterController {
 
         act.setCreatedBy(userId);
         act.setStatus("ADMIN".equals(role) ? "APPROVED" : "PENDING");
+        // 直接通过的活动立即生成签到码，否则永远无法签到
+        if ("APPROVED".equals(act.getStatus()) && act.getCheckinCode() == null)
+            act.setCheckinCode(cn.hutool.core.util.RandomUtil.randomNumbers(6));
         act.setEnrolledCount(0);
         activityMapper.insert(act);
 
@@ -420,6 +423,8 @@ public class ApplicationCenterController {
             return Result.fail(403, "权限不足");
         ResourceBorrow b = resourceBorrowMapper.selectById(id);
         if (b == null) return Result.fail("借用记录不存在");
+        if (!"APPROVED".equals(b.getStatus()) && !"BORROWING".equals(b.getStatus()))
+            return Result.fail("该借用不可验收（当前状态：" + b.getStatus() + "）");
 
         b.setActualReturnDate(LocalDate.now());
         b.setReturnCondition(
@@ -474,16 +479,57 @@ public class ApplicationCenterController {
 
     @PostMapping("/fund/closure")
     public Result<?> closureFund(@RequestBody Map<String, Object> body) {
+        if (body.get("fundId") == null) return Result.fail("缺少经费ID");
         Long fundId = Long.valueOf(body.get("fundId").toString());
         FundRecord fund = fundRecordMapper.selectById(fundId);
         if (fund == null) return Result.fail("经费记录不存在");
         if (!"APPROVED".equals(fund.getStatus()))
             return Result.fail("经费未审批通过，无法核销");
+        // 仅管理员 / 申请人 / 社长可发起核销
+        Long uid = getCurrentUserId();
+        boolean isAdmin = "ADMIN".equals(getCurrentUserRole());
+        boolean isApplicant = fund.getApplicantId() != null && fund.getApplicantId().equals(uid);
+        Club fundClub = fund.getClubId() != null ? clubMapper.selectById(fund.getClubId()) : null;
+        boolean isPresident = fundClub != null && uid != null && uid.equals(fundClub.getPresidentId());
+        if (!isAdmin && !isApplicant && !isPresident) return Result.fail(403, "无权操作该经费核销");
         fund.setClosureStatus("PENDING");
         fundRecordMapper.updateById(fund);
         notifyAdmins("经费核销待审批",
             "社团提交经费核销申请(¥" + fund.getTotalAmount() + ")");
         return Result.ok("核销申请已提交");
+    }
+
+    /** 活动结项审批（管理员）— 避免结项永远停留 PENDING */
+    @PutMapping("/activity/closure/{id}/approve")
+    public Result<?> approveClosure(@PathVariable Long id, @RequestBody(required = false) Map<String, Object> body) {
+        if (!"ADMIN".equals(getCurrentUserRole())) return Result.fail(403, "权限不足");
+        ActivityClosure closure = activityClosureMapper.selectById(id);
+        if (closure == null) return Result.fail("结项记录不存在");
+        if (!"PENDING".equals(closure.getStatus())) return Result.fail("该结项已处理");
+        Object action = body != null ? body.get("action") : null;
+        boolean ok = action == null || "approve".equals(action.toString());
+        closure.setStatus(ok ? "APPROVED" : "REJECTED");
+        closure.setUpdateTime(LocalDateTime.now());
+        activityClosureMapper.updateById(closure);
+        if (closure.getSubmittedBy() != null)
+            notificationService.notify(closure.getSubmittedBy(), "活动结项审批结果",
+                "您提交的活动结项已" + (ok ? "通过" : "驳回"), "SYSTEM");
+        return Result.ok(ok ? "结项已通过" : "结项已驳回");
+    }
+
+    /** 经费核销完成（管理员）— 关闭核销闭环 */
+    @PutMapping("/fund/closure/{fundId}/complete")
+    public Result<?> completeFundClosure(@PathVariable Long fundId) {
+        if (!"ADMIN".equals(getCurrentUserRole())) return Result.fail(403, "权限不足");
+        FundRecord fund = fundRecordMapper.selectById(fundId);
+        if (fund == null) return Result.fail("经费记录不存在");
+        if (!"PENDING".equals(fund.getClosureStatus())) return Result.fail("该经费无待完成的核销");
+        fund.setClosureStatus("COMPLETED");
+        fundRecordMapper.updateById(fund);
+        if (fund.getApplicantId() != null)
+            notificationService.notify(fund.getApplicantId(), "经费核销完成",
+                "您的经费核销已完成", "FUND_APPROVAL");
+        return Result.ok("核销已完成");
     }
 
     // ======================== 模板说明 ========================

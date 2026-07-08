@@ -48,9 +48,11 @@ public class ClaudeClient {
     @Value("${llm.api.max-retries}")
     private int maxRetries;
 
+    // Per-attempt read timeout kept well under the nginx (180s) / frontend (170s)
+    // budgets so a slow call fails inside the backend, not as an nginx/axios timeout.
     private final OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(120, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(55, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
             .build();
 
@@ -110,7 +112,10 @@ public class ClaudeClient {
                 ? buildAnthropicRequest(systemPrompt, userMessage, key)
                 : buildDeepSeekRequest(systemPrompt, userMessage, key);
 
-        for (int attempt = 1; attempt <= maxRetries; attempt++) {
+        // Cap retries for this synchronous flow so total budget (≈2×55s + backoff)
+        // stays under the 170s frontend / 180s nginx timeouts.
+        int retries = Math.max(1, Math.min(maxRetries, 2));
+        for (int attempt = 1; attempt <= retries; attempt++) {
             try {
                 long start = System.currentTimeMillis();
                 Response response = client.newCall(request).execute();
@@ -136,12 +141,12 @@ public class ClaudeClient {
                 log.warn("{} API网络异常(第{}次): {}", provider, attempt, e.getMessage());
             }
 
-            if (attempt < maxRetries) {
+            if (attempt < retries) {
                 try { Thread.sleep(2000L * attempt); } catch (InterruptedException ignored) {}
             }
         }
 
-        log.error("{} API调用最终失败，已重试{}次", provider, maxRetries);
+        log.error("{} API调用最终失败，已重试{}次", provider, retries);
         return null;
     }
 

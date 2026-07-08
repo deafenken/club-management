@@ -194,7 +194,12 @@ const submit = async () => {
   try { await formRef.value?.validate() } catch { return }
   submitting.value = true
   try {
-    await request.post('/venue/booking/full', { ...form })
+    await request.post('/venue/booking/full', {
+      ...form,
+      equipmentNeeds: JSON.stringify(form.equipmentNeeds || []),
+      // agreedDamageClause 后端是 Integer(0/1)
+      agreedDamageClause: form.agreedDamageClause ? 1 : 0
+    })
     ElMessage.success('场地预约申请已提交！')
     visible.value = false
     emit('refresh')

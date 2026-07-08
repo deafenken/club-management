@@ -219,7 +219,14 @@ const submit = async () => {
   try { await formRef.value?.validate() } catch { return }
   submitting.value = true
   try {
-    await request.post('/activity/full', { ...form })
+    await request.post('/activity/full', {
+      ...form,
+      // 后端这些字段是 Integer(0/1)，Jackson 不接受布尔值，需显式转换
+      isFee: form.isFee ? 1 : 0,
+      needVenue: form.needVenue ? 1 : 0,
+      needResource: form.needResource ? 1 : 0,
+      needFund: form.needFund ? 1 : 0
+    })
     ElMessage.success('活动申请已提交！')
     visible.value = false
     emit('refresh')

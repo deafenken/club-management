@@ -7,4 +7,5 @@ public class SysAnnouncement {
     @TableId(type=IdType.AUTO) private Long id;
     private String title; private String content; private Integer isTop;
     private Long createdBy; private LocalDateTime createTime;
+    private String target; // 推送范围: ALL/PRESIDENT/STUDENT/TEACHER/ADMIN
 }

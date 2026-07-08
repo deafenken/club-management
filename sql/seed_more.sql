@@ -3,12 +3,12 @@ SET FOREIGN_KEY_CHECKS = 0;
 
 -- ========== 追加用户 ==========
 INSERT IGNORE INTO sys_user (id, username, password, real_name, phone, role, college, status) VALUES
-(7,  'president03', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '陈社长', '13800000008', 'PRESIDENT', '体育学院', 1),
-(8,  'president04', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '刘社长', '13800000009', 'PRESIDENT', '经管学院', 1),
-(9,  'president05', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '杨社长', '13800000010', 'PRESIDENT', '文学院', 1),
-(10, 'student03',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '吴同学', '13800000011', 'STUDENT',   '体育学院', 1),
-(11, 'student04',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '郑同学', '13800000012', 'STUDENT',   '经管学院', 1),
-(12, 'student05',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '王同学', '13800000013', 'STUDENT',   '文学院', 1);
+(7,  'president03', '$2a$10$yt1kw9Gf5gShfBwpPvBe4.n4ZUD1hItYSTO71PXZzDEgObjMSwz7i', '陈社长', '13800000008', 'PRESIDENT', '体育学院', 1),
+(8,  'president04', '$2a$10$yt1kw9Gf5gShfBwpPvBe4.n4ZUD1hItYSTO71PXZzDEgObjMSwz7i', '刘社长', '13800000009', 'PRESIDENT', '经管学院', 1),
+(9,  'president05', '$2a$10$yt1kw9Gf5gShfBwpPvBe4.n4ZUD1hItYSTO71PXZzDEgObjMSwz7i', '杨社长', '13800000010', 'PRESIDENT', '文学院', 1),
+(10, 'student03',   '$2a$10$yt1kw9Gf5gShfBwpPvBe4.n4ZUD1hItYSTO71PXZzDEgObjMSwz7i', '吴同学', '13800000011', 'STUDENT',   '体育学院', 1),
+(11, 'student04',   '$2a$10$yt1kw9Gf5gShfBwpPvBe4.n4ZUD1hItYSTO71PXZzDEgObjMSwz7i', '郑同学', '13800000012', 'STUDENT',   '经管学院', 1),
+(12, 'student05',   '$2a$10$yt1kw9Gf5gShfBwpPvBe4.n4ZUD1hItYSTO71PXZzDEgObjMSwz7i', '王同学', '13800000013', 'STUDENT',   '文学院', 1);
 
 -- ========== 追加社团 ==========
 INSERT IGNORE INTO club (id, name, category, description, president_id, teacher_id, member_count, status) VALUES
