@@ -1,0 +1,134 @@
+{
+  "__requires": [
+    { "type": "grafana", "id": "grafana", "version": "9.0.0" },
+    { "type": "datasource", "id": "mysql", "version": "1.0.0" },
+    { "type": "panel", "id": "stat", "version": "1.0.0" },
+    { "type": "panel", "id": "timeseries", "version": "1.0.0" },
+    { "type": "panel", "id": "table", "version": "1.0.0" }
+  ],
+  "title": "社团管理系统 — LLM调用监控看板",
+  "description": "监控AI智能策划模块的LLM调用情况：成功率、延迟、Token消耗、Agent分布",
+  "tags": ["club-management", "llm-monitoring"],
+  "panels": [
+    {
+      "id": 1,
+      "title": "今日LLM调用次数",
+      "type": "stat",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "mysql", "uid": "club_db" },
+          "rawSql": "SELECT COUNT(*) FROM llm_call_log WHERE DATE(create_time) = CURDATE()",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } }
+      }
+    },
+    {
+      "id": 2,
+      "title": "LLM调用成功率",
+      "type": "stat",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "mysql", "uid": "club_db" },
+          "rawSql": "SELECT CONCAT(ROUND(SUM(CASE WHEN status='SUCCESS' THEN 1 ELSE 0 END)/COUNT(*)*100, 1), '%') FROM llm_call_log WHERE DATE(create_time) = CURDATE()",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 90 }] } }
+      }
+    },
+    {
+      "id": 3,
+      "title": "平均响应延迟(ms)",
+      "type": "stat",
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "mysql", "uid": "club_db" },
+          "rawSql": "SELECT ROUND(AVG(latency_ms), 0) FROM llm_call_log WHERE DATE(create_time) = CURDATE() AND status='SUCCESS'",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "今日Token消耗",
+      "type": "stat",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "mysql", "uid": "club_db" },
+          "rawSql": "SELECT COALESCE(SUM(tokens_used), 0) FROM llm_call_log WHERE DATE(create_time) = CURDATE()",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "各Agent调用次数分布",
+      "type": "piechart",
+      "gridPos": { "x": 0, "y": 4, "w": 8, "h": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "mysql", "uid": "club_db" },
+          "rawSql": "SELECT agent_type AS metric, COUNT(*) AS value FROM llm_call_log WHERE DATE(create_time) = CURDATE() GROUP BY agent_type",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "近7日LLM调用趋势",
+      "type": "timeseries",
+      "gridPos": { "x": 8, "y": 4, "w": 16, "h": 8 },
+      "targets": [
+        {
+          "refId": "SUCCESS",
+          "datasource": { "type": "mysql", "uid": "club_db" },
+          "rawSql": "SELECT DATE(create_time) AS time, COUNT(*) AS value FROM llm_call_log WHERE create_time >= DATE_SUB(NOW(), INTERVAL 7 DAY) AND status='SUCCESS' GROUP BY DATE(create_time)",
+          "format": "time_series"
+        },
+        {
+          "refId": "FAILED",
+          "datasource": { "type": "mysql", "uid": "club_db" },
+          "rawSql": "SELECT DATE(create_time) AS time, COUNT(*) AS value FROM llm_call_log WHERE create_time >= DATE_SUB(NOW(), INTERVAL 7 DAY) AND status != 'SUCCESS' GROUP BY DATE(create_time)",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "lineWidth": 2, "fillOpacity": 15 },
+          "color": { "mode": "fixed" }
+        }
+      }
+    },
+    {
+      "id": 7,
+      "title": "最近LLM调用记录",
+      "type": "table",
+      "gridPos": { "x": 0, "y": 12, "w": 24, "h": 6 },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "mysql", "uid": "club_db" },
+          "rawSql": "SELECT agent_type AS Agent, status AS 状态, latency_ms AS '延迟(ms)', tokens_used AS Token数, retry_count AS 重试次数, mermaid_valid AS Mermaid合法, create_time AS 时间 FROM llm_call_log ORDER BY create_time DESC LIMIT 20",
+          "format": "table"
+        }
+      ]
+    }
+  ],
+  "time": { "from": "now-7d", "to": "now" },
+  "refresh": "30s",
+  "schemaVersion": 36,
+  "version": 1
+}

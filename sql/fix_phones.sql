@@ -1,0 +1,70 @@
+-- 把所有用户的手机号改成更真实的格式
+SET NAMES utf8mb4;
+
+UPDATE sys_user SET phone = '13659921201' WHERE id = 1;   -- 张管理
+UPDATE sys_user SET phone = '13876542201' WHERE id = 2;   -- 李老师
+UPDATE sys_user SET phone = '13988763302' WHERE id = 3;   -- 王老师
+UPDATE sys_user SET phone = '13712341103' WHERE id = 4;   -- 赵社长
+UPDATE sys_user SET phone = '13599882204' WHERE id = 5;   -- 钱社长
+UPDATE sys_user SET phone = '13677883305' WHERE id = 6;   -- 陈社长
+UPDATE sys_user SET phone = '13866774406' WHERE id = 7;   -- 刘社长
+UPDATE sys_user SET phone = '13955665507' WHERE id = 8;   -- 杨社长
+UPDATE sys_user SET phone = '13788990008' WHERE id = 9;   -- 孙同学
+UPDATE sys_user SET phone = '13566778809' WHERE id = 10;  -- 周同学
+UPDATE sys_user SET phone = '13699887710' WHERE id = 11;  -- 吴同学
+UPDATE sys_user SET phone = '13811223311' WHERE id = 12;  -- 郑同学
+UPDATE sys_user SET phone = '13922110013' WHERE id = 13;  -- 陈思远
+UPDATE sys_user SET phone = '13733445514' WHERE id = 14;  -- 林雨桐
+UPDATE sys_user SET phone = '13555667715' WHERE id = 15;  -- 黄浩然
+UPDATE sys_user SET phone = '13677889916' WHERE id = 16;  -- 吴佳琪
+UPDATE sys_user SET phone = '13899001117' WHERE id = 17;  -- 周子涵
+UPDATE sys_user SET phone = '13911223318' WHERE id = 18;  -- 赵文博
+UPDATE sys_user SET phone = '13755667719' WHERE id = 19;  -- 孙雨萱
+UPDATE sys_user SET phone = '13599880020' WHERE id = 20;  -- 刘子轩
+UPDATE sys_user SET phone = '13622334421' WHERE id = 21;  -- 张若琳
+UPDATE sys_user SET phone = '13866778822' WHERE id = 22;  -- 王子豪
+UPDATE sys_user SET phone = '13988776623' WHERE id = 23;  -- 陈奕迅
+UPDATE sys_user SET phone = '13711223324' WHERE id = 24;  -- 李雪琴
+UPDATE sys_user SET phone = '13533445525' WHERE id = 25;  -- 赵一鸣
+UPDATE sys_user SET phone = '13655667726' WHERE id = 26;  -- 钱思雨
+UPDATE sys_user SET phone = '13877889927' WHERE id = 27;  -- 孙子涵
+UPDATE sys_user SET phone = '13999001128' WHERE id = 28;  -- 周杰
+UPDATE sys_user SET phone = '13722334429' WHERE id = 29;  -- 吴思远
+UPDATE sys_user SET phone = '13566778830' WHERE id = 30;  -- 郑雨晴
+UPDATE sys_user SET phone = '13688990031' WHERE id = 31;  -- 王诗涵
+UPDATE sys_user SET phone = '13811220032' WHERE id = 32;  -- 冯子轩
+UPDATE sys_user SET phone = '13933445533' WHERE id = 33;  -- 陈思琪
+UPDATE sys_user SET phone = '13755668834' WHERE id = 34;  -- 褚昊天
+UPDATE sys_user SET phone = '13577889935' WHERE id = 35;  -- 卫若兰
+UPDATE sys_user SET phone = '13699001136' WHERE id = 36;  -- 蒋雨辰
+UPDATE sys_user SET phone = '13822334437' WHERE id = 37;  -- 沈嘉豪
+UPDATE sys_user SET phone = '13966778838' WHERE id = 38;  -- 韩雨桐
+UPDATE sys_user SET phone = '13788991139' WHERE id = 39;  -- 杨博文
+UPDATE sys_user SET phone = '13511223340' WHERE id = 40;  -- 朱思涵
+UPDATE sys_user SET phone = '13633445541' WHERE id = 41;  -- 秦子墨
+UPDATE sys_user SET phone = '13855667742' WHERE id = 42;  -- 尤雨馨
+UPDATE sys_user SET phone = '13977889943' WHERE id = 43;  -- 许文韬
+UPDATE sys_user SET phone = '13799001144' WHERE id = 44;  -- 何雨菲
+UPDATE sys_user SET phone = '13522334445' WHERE id = 45;  -- 吕嘉诚
+UPDATE sys_user SET phone = '13666778846' WHERE id = 46;  -- 施雨萱
+UPDATE sys_user SET phone = '13888990047' WHERE id = 47;  -- 张昊然
+UPDATE sys_user SET phone = '13911223348' WHERE id = 48;  -- 孔思源
+UPDATE sys_user SET phone = '13733446649' WHERE id = 49;  -- 曹宇轩
+UPDATE sys_user SET phone = '13555668850' WHERE id = 50;  -- 严雨婷
+UPDATE sys_user SET phone = '13677880051' WHERE id = 51;  -- 华博文
+UPDATE sys_user SET phone = '13899002252' WHERE id = 52;  -- 金雨辰
+UPDATE sys_user SET phone = '13922334453' WHERE id = 53;  -- 魏思远
+UPDATE sys_user SET phone = '13766778854' WHERE id = 54;  -- 陶雨晴
+UPDATE sys_user SET phone = '13588990055' WHERE id = 55;  -- 姜浩然
+UPDATE sys_user SET phone = '13611223356' WHERE id = 56;  -- 戚思雨
+UPDATE sys_user SET phone = '13833445557' WHERE id = 57;  -- 谢博文
+UPDATE sys_user SET phone = '13955667758' WHERE id = 58;  -- 邹雨萱
+UPDATE sys_user SET phone = '13777889959' WHERE id = 59;  -- 喻子轩
+UPDATE sys_user SET phone = '13599001160' WHERE id = 60;  -- 柏雨馨
+UPDATE sys_user SET phone = '13629921201' WHERE id = 61;  -- 梁管理员
+UPDATE sys_user SET phone = '13855551162' WHERE id = 62;  -- 郝管理员
+UPDATE sys_user SET phone = '13966662263' WHERE id = 63;  -- 赵管理员
+UPDATE sys_user SET phone = '13777773364' WHERE id = 64;  -- 王管理员
+
+-- 确认
+SELECT id, username, real_name, phone FROM sys_user ORDER BY id;

@@ -1,0 +1,29 @@
+# ---- Secrets / env ----
+.env
+backend/.env
+docker-compose.override.yml
+
+# ---- Logs ----
+*.log
+
+# ---- Node / frontend ----
+frontend/node_modules/
+frontend/dist/
+node_modules/
+
+# ---- Java / backend ----
+backend/target/
+target/
+*.class
+
+# ---- IDE ----
+.idea/
+*.iml
+.vscode/
+
+# ---- macOS junk ----
+.DS_Store
+._*
+
+# ---- OS / misc ----
+Thumbs.db
