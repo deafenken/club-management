@@ -5,7 +5,10 @@
 # =====================================================
 set -e
 DB="${MYSQL_DATABASE:-club_management}"
-MYSQL="mysql -u root -p${MYSQL_ROOT_PASSWORD}"
+# --default-character-set=utf8mb4 is REQUIRED: init.sql / seed_users.sql have no
+# `SET NAMES`, so without it the client connects as latin1 and double-encodes the
+# UTF-8 Chinese into mojibake.
+MYSQL="mysql --default-character-set=utf8mb4 -u root -p${MYSQL_ROOT_PASSWORD}"
 
 # 1) Base schema + baseline seed (init.sql contains its own
 #    DROP/CREATE/USE database statements, so run without -D).
