@@ -71,8 +71,8 @@ onMounted(fetch)
 
 .category-tags { display: flex; gap: 8px; margin-bottom: 16px; }
 .cat-tag { padding: 5px 14px; border-radius: 20px; border: 1px solid #e0e0e0; background: #fff; color: #666; font-size: 12px; cursor: pointer; transition: all 0.2s; }
-.cat-tag:hover { background: #e6f7ff; border-color: #91d5ff; }
-.cat-tag.active { background: #1890ff; color: #fff; border-color: #1890ff; }
+.cat-tag:hover { background: #F6E9E2; border-color: #91d5ff; }
+.cat-tag.active { background: #C96442; color: #fff; border-color: #C96442; }
 
 .venue-grid {
   display: grid;
@@ -91,6 +91,6 @@ onMounted(fetch)
 .venue-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
 
 .quick-links { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
-.ql { font-size: 12px; color: #1890ff; background: #e6f7ff; padding: 4px 12px; border-radius: 12px; text-decoration: none; transition: all 0.2s; }
+.ql { font-size: 12px; color: #C96442; background: #F6E9E2; padding: 4px 12px; border-radius: 12px; text-decoration: none; transition: all 0.2s; }
 .ql:hover { background: #bae7ff; transform: translateY(-1px); }
 </style>

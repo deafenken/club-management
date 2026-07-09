@@ -117,7 +117,7 @@ function handleSaveDraft() {
 }
 
 :deep(.el-steps) {
-  --el-color-primary: #1890ff;
+  --el-color-primary: #C96442;
 }
 
 :deep(.el-step__title) {
@@ -132,17 +132,17 @@ function handleSaveDraft() {
 }
 
 :deep(.el-step__head.is-finish .el-step__icon) {
-  background: #1890ff;
-  border-color: #1890ff;
+  background: #C96442;
+  border-color: #C96442;
 }
 
 :deep(.el-step__head.is-process .el-step__icon) {
-  border-color: #1890ff;
-  background: #1890ff;
+  border-color: #C96442;
+  background: #C96442;
 }
 
 :deep(.el-step__title.is-process) {
-  color: #1890ff;
+  color: #C96442;
   font-weight: 700;
 }
 </style>

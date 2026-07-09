@@ -14,7 +14,7 @@
           </div>
           <el-switch
             v-model="pref.enabled"
-            active-color="#1890ff"
+            active-color="#C96442"
             @change="(val) => savePref(pref.typeCode, val)"
           />
         </div>

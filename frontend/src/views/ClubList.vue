@@ -359,14 +359,14 @@ watch(showMyClubs, (v) => { if (v) fetchMyClubs() })
 }
 
 .category-tag:hover {
-  background: #e6f7ff;
+  background: #F6E9E2;
   border-color: #91d5ff;
 }
 
 .category-tag--active {
-  background: #1890ff;
+  background: #C96442;
   color: #fff;
-  border-color: #1890ff;
+  border-color: #C96442;
 }
 
 /* ===== 搜索栏 ===== */
@@ -480,7 +480,7 @@ watch(showMyClubs, (v) => { if (v) fetchMyClubs() })
 
 /* ===== 加入社团对话框 ===== */
 .join-club-info {
-  background: linear-gradient(135deg, #e6f7ff 0%, #f0f5ff 100%);
+  background: linear-gradient(135deg, #F6E9E2 0%, #f0f5ff 100%);
   border-radius: 10px;
   padding: 18px 20px;
   margin-bottom: 20px;
@@ -488,7 +488,7 @@ watch(showMyClubs, (v) => { if (v) fetchMyClubs() })
 .join-club-name {
   font-size: 18px;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #26241F;
   margin-bottom: 8px;
 }
 .join-club-meta {

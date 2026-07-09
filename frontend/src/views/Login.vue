@@ -1,154 +1,98 @@
 <template>
-  <div class="login-container">
-    <!-- ===== 背景轮播层 ===== -->
-    <div class="bg-carousel" @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
-      <div
-        v-for="(img, idx) in bgImages"
-        :key="idx"
-        class="bg-slide"
-        :class="{ active: idx === currentBg }"
-        :style="{ backgroundImage: `url(${img})` }"
-      ></div>
-    </div>
+  <div class="login-page">
+    <!-- ===== 左侧品牌区 ===== -->
+    <section class="brand-pane">
+      <div class="brand-decor decor-1"></div>
+      <div class="brand-decor decor-2"></div>
 
-    <!-- 黑色遮罩 rgba(0,0,0,0.23) -->
-    <div class="bg-overlay"></div>
-
-    <!-- 光斑 -->
-    <div class="bg-glow bg-glow-1"></div>
-    <div class="bg-glow bg-glow-2"></div>
-
-    <!-- 左右切换箭头 -->
-    <button class="carousel-arrow carousel-arrow-left" @click="prevBg" v-if="bgImages.length > 1">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
-    </button>
-    <button class="carousel-arrow carousel-arrow-right" @click="nextBg" v-if="bgImages.length > 1">
-      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
-
-    <!-- 轮播圆点 -->
-    <div class="carousel-dots" v-if="bgImages.length > 1">
-      <span v-for="(img, idx) in bgImages" :key="idx" class="carousel-dot" :class="{ active: idx === currentBg }" @click="goToBg(idx)"></span>
-    </div>
-
-    <!-- ===== 左侧品牌区：左上角定位，左8% 上18% ===== -->
-    <div class="brand-area">
-      <h1 class="brand-title">高校社团管理系统</h1>
-      <p class="brand-tagline">社团活动 · 智能管理 · 快乐参与</p>
-      <p class="brand-desc">一站式高校社团活动、人员、审批综合管理平台</p>
-    </div>
-
-    <!-- ===== 右侧登录卡片：靠右垂直居中，右10% ===== -->
-    <div class="login-card">
-      <!-- 安全警示 -->
-      <p class="security-notice">⚠ 请使用管理员分配的账号登录，勿与他人共享密码</p>
-
-      <h2 class="card-title">欢迎登录</h2>
-
-      <transition name="form-switch" mode="out-in">
-        <!-- ===== 登录表单 ===== -->
-        <div v-if="!isRegister" key="login" class="form-body">
-          <el-form :model="form" :rules="loginRules" ref="formRef" @submit.prevent>
-            <el-form-item prop="username">
-              <el-input
-                v-model="form.username" placeholder="请输入账号" size="large" class="custom-input"
-                @input="clearFieldError('username')"
-              ><template #prefix><el-icon class="input-icon"><User /></el-icon></template></el-input>
-            </el-form-item>
-
-            <el-form-item prop="password">
-              <el-input
-                v-model="form.password" type="password" placeholder="请输入密码" size="large"
-                class="custom-input" show-password
-                @input="clearFieldError('password')" @keyup.enter="login"
-              ><template #prefix><el-icon class="input-icon"><Lock /></el-icon></template></el-input>
-            </el-form-item>
-
-            <el-form-item>
-              <el-button type="primary" size="large" class="login-btn" :disabled="!loginValid" @click="login" :loading="loading">
-                登录
-              </el-button>
-            </el-form-item>
-          </el-form>
+      <div class="brand-top">
+        <div class="brand-mark">
+          <svg viewBox="0 0 32 32" width="22" height="22" fill="none">
+            <circle cx="13" cy="12" r="4.6" fill="#fff" opacity=".96"/>
+            <path d="M7 24c0-4.6 6-7.4 6-7.4s6 2.8 6 7.4v2.6H7V24z" fill="#fff" opacity=".9"/>
+            <circle cx="22" cy="12" r="4.1" fill="#fff" opacity=".85"/>
+            <path d="M18 24c0-4.2 4.6-6.6 4.6-6.6s4.6 2.4 4.6 6.6v2.6H18V24z" fill="#fff" opacity=".8"/>
+          </svg>
         </div>
-
-        <!-- ===== 注册表单 ===== -->
-        <div v-else key="register" class="form-body">
-          <el-form :model="regForm" :rules="regRules" ref="regFormRef">
-            <el-form-item prop="username">
-              <el-input v-model="regForm.username" placeholder="用户名" size="large" class="custom-input">
-                <template #prefix><el-icon class="input-icon"><User /></el-icon></template></el-input>
-            </el-form-item>
-            <el-form-item prop="password">
-              <el-input v-model="regForm.password" type="password" placeholder="密码" size="large" class="custom-input" show-password>
-                <template #prefix><el-icon class="input-icon"><Lock /></el-icon></template></el-input>
-            </el-form-item>
-            <el-form-item prop="rePassword">
-              <el-input v-model="regForm.rePassword" type="password" placeholder="确认密码" size="large" class="custom-input" show-password>
-                <template #prefix><el-icon class="input-icon"><Lock /></el-icon></template></el-input>
-            </el-form-item>
-            <el-form-item prop="realName">
-              <el-input v-model="regForm.realName" placeholder="真实姓名" size="large" class="custom-input">
-                <template #prefix><el-icon class="input-icon"><UserFilled /></el-icon></template></el-input>
-            </el-form-item>
-            <el-form-item prop="phone">
-              <el-input v-model="regForm.phone" placeholder="手机号" size="large" class="custom-input">
-                <template #prefix><el-icon class="input-icon"><Phone /></el-icon></template></el-input>
-            </el-form-item>
-            <el-form-item prop="college">
-              <el-input v-model="regForm.college" placeholder="所在学院" size="large" class="custom-input">
-                <template #prefix><el-icon class="input-icon"><School /></el-icon></template></el-input>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" size="large" class="login-btn" @click="register" :loading="regLoading">注册</el-button>
-            </el-form-item>
-          </el-form>
-        </div>
-      </transition>
-
-      <div class="switch-area">
-        <el-button type="primary" @click="isRegister=!isRegister;resetForms()" class="switch-btn">
-          {{ isRegister ? '已有账号？去登录' : '没有账号？去注册' }}
-        </el-button>
+        <span class="brand-mark-text">CLUB HUB</span>
       </div>
-    </div>
 
-    <!-- ===== 页脚 ===== -->
-    <footer class="login-footer">© 2026 高校社团管理系统 &nbsp;|&nbsp; Powered by Spring Boot &amp; Vue3</footer>
+      <div class="brand-body">
+        <h1 class="brand-title font-display">高校社团<br/>综合管理平台</h1>
+        <p class="brand-tagline">社团活动 · 智能审批 · 资源调度</p>
+        <ul class="brand-points">
+          <li><span class="dot"></span>五类申请统一表单 + 多级审批流</li>
+          <li><span class="dot"></span>场地 / 物资 / 经费一站式管理</li>
+          <li><span class="dot"></span>AI 智能活动策划，一键生成方案</li>
+        </ul>
+      </div>
+
+      <p class="brand-foot">© 2026 高校社团管理系统 · Powered by Spring Boot &amp; Vue 3</p>
+    </section>
+
+    <!-- ===== 右侧表单区 ===== -->
+    <section class="form-pane">
+      <div class="form-card">
+        <div class="form-head">
+          <h2 class="form-title">{{ isRegister ? '创建账号' : '欢迎回来' }}</h2>
+          <p class="form-sub">{{ isRegister ? '填写信息完成注册' : '请登录以继续使用管理平台' }}</p>
+        </div>
+
+        <transition name="fade-slide" mode="out-in">
+          <!-- 登录 -->
+          <el-form v-if="!isRegister" key="login" :model="form" :rules="loginRules" ref="formRef" @submit.prevent>
+            <label class="field-label">账号</label>
+            <el-form-item prop="username">
+              <el-input v-model="form.username" placeholder="请输入账号" size="large" @input="clearFieldError('username')">
+                <template #prefix><el-icon><User /></el-icon></template>
+              </el-input>
+            </el-form-item>
+
+            <label class="field-label">密码</label>
+            <el-form-item prop="password">
+              <el-input v-model="form.password" type="password" placeholder="请输入密码" size="large" show-password
+                @input="clearFieldError('password')" @keyup.enter="login">
+                <template #prefix><el-icon><Lock /></el-icon></template>
+              </el-input>
+            </el-form-item>
+
+            <el-button type="primary" size="large" class="submit-btn" :disabled="!loginValid" :loading="loading" @click="login">
+              登 录
+            </el-button>
+          </el-form>
+
+          <!-- 注册 -->
+          <el-form v-else key="register" :model="regForm" :rules="regRules" ref="regFormRef">
+            <div class="reg-grid">
+              <el-form-item prop="username"><el-input v-model="regForm.username" placeholder="用户名" size="large" /></el-form-item>
+              <el-form-item prop="realName"><el-input v-model="regForm.realName" placeholder="真实姓名" size="large" /></el-form-item>
+              <el-form-item prop="password"><el-input v-model="regForm.password" type="password" placeholder="密码" size="large" show-password /></el-form-item>
+              <el-form-item prop="rePassword"><el-input v-model="regForm.rePassword" type="password" placeholder="确认密码" size="large" show-password /></el-form-item>
+              <el-form-item prop="phone"><el-input v-model="regForm.phone" placeholder="手机号" size="large" /></el-form-item>
+              <el-form-item prop="college"><el-input v-model="regForm.college" placeholder="所在学院" size="large" /></el-form-item>
+            </div>
+            <el-button type="primary" size="large" class="submit-btn" :loading="regLoading" @click="register">注 册</el-button>
+          </el-form>
+        </transition>
+
+        <div class="form-switch">
+          <span>{{ isRegister ? '已有账号？' : '还没有账号？' }}</span>
+          <a @click="isRegister = !isRegister; resetForms()">{{ isRegister ? '返回登录' : '立即注册' }}</a>
+        </div>
+
+        <p class="form-notice">⚠ 请使用管理员分配的账号登录，勿与他人共享密码</p>
+      </div>
+    </section>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
 import request from '../api/request'
 
-// ===== 背景轮播 =====
-import img1 from '../assets/images/111.jpg'
-import img2 from '../assets/images/p.jpg'
-import img3 from '../assets/images/j.jpg'
-const bgImages = [img1, img2, img3]
-const currentBg = ref(0)
-let carouselTimer = null
-let paused = false
-
-const nextBg = () => { currentBg.value = (currentBg.value + 1) % bgImages.length }
-const prevBg = () => { currentBg.value = (currentBg.value - 1 + bgImages.length) % bgImages.length }
-const goToBg = (idx) => { currentBg.value = idx }
-
-const startTimer = () => {
-  clearInterval(carouselTimer)
-  if (bgImages.length > 1) carouselTimer = setInterval(nextBg, 5000)
-}
-const pauseCarousel = () => { paused = true; clearInterval(carouselTimer) }
-const resumeCarousel = () => { paused = false; if (bgImages.length > 1) startTimer() }
-
-onMounted(() => { if (bgImages.length > 1) startTimer() })
-onUnmounted(() => clearInterval(carouselTimer))
-
-// ===== 登录/注册 =====
 const router = useRouter()
 const loading = ref(false); const regLoading = ref(false)
 const isRegister = ref(false)
@@ -208,215 +152,107 @@ const register = async () => {
 </script>
 
 <style scoped>
-/* ============================================
-   全局容器 + 入场淡入
-   ============================================ */
-.login-container {
-  height: 100vh;
-  width: 100%;
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  background: var(--clay-50);
+}
+
+/* ---------- 左侧品牌 ---------- */
+.brand-pane {
   position: relative;
+  flex: 1 1 52%;
   overflow: hidden;
-  background: #1a1a2e;
-  animation: pageIn 0.6s ease;
+  padding: 56px 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #fff;
+  background:
+    radial-gradient(120% 90% at 15% 15%, #D9764F 0%, transparent 55%),
+    linear-gradient(150deg, #C15F3C 0%, #A54029 62%, #8A3A28 100%);
 }
-@keyframes pageIn { from { opacity: 0; } to { opacity: 1; } }
+.brand-decor { position: absolute; border-radius: 50%; pointer-events: none; }
+.decor-1 { width: 460px; height: 460px; right: -140px; top: -120px;
+  background: radial-gradient(circle, rgba(255,255,255,.14), transparent 68%); }
+.decor-2 { width: 360px; height: 360px; left: -100px; bottom: -120px;
+  background: radial-gradient(circle, rgba(0,0,0,.16), transparent 66%); }
 
-/* ============================================
-   背景轮播
-   ============================================ */
-.bg-carousel { position: absolute; inset: 0; z-index: 0; }
-.bg-slide {
-  position: absolute; inset: 0;
-  background-size: cover; background-position: center; background-repeat: no-repeat;
-  opacity: 0; transition: opacity 1.0s ease;
-}
-.bg-slide.active { opacity: 1; }
-
-/* 黑色遮罩 rgba(0,0,0,0.23) */
-.bg-overlay {
-  position: absolute; inset: 0; z-index: 1;
-  background: rgba(0, 0, 0, 0.23);
-}
-
-/* 光斑 */
-.bg-glow { position: absolute; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 1; }
-.bg-glow-1 { width: 320px; height: 320px; background: rgba(24,144,255,0.05); top: -60px; right: -80px; animation: glowFloat 10s ease-in-out infinite; }
-.bg-glow-2 { width: 260px; height: 260px; background: rgba(54,207,201,0.04); bottom: -40px; left: -60px; animation: glowFloat 12s ease-in-out infinite reverse; }
-@keyframes glowFloat {
-  0%, 100% { transform: translate(0,0) scale(1); }
-  33%  { transform: translate(20px,-20px) scale(1.06); }
-  66%  { transform: translate(-12px,12px) scale(0.94); }
-}
-
-/* 切换箭头 */
-.carousel-arrow {
-  position: absolute; top: 50%; transform: translateY(-50%); z-index: 3;
-  width: 38px; height: 38px; border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.25);
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(6px); cursor: pointer;
+.brand-top { position: relative; z-index: 2; display: flex; align-items: center; gap: 12px; }
+.brand-mark {
+  width: 40px; height: 40px; border-radius: 11px;
+  background: rgba(255,255,255,.16);
+  border: 1px solid rgba(255,255,255,.28);
   display: flex; align-items: center; justify-content: center;
-  transition: all 0.25s; opacity: 0.45;
 }
-.carousel-arrow:hover { opacity: 1; background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.45); }
-.carousel-arrow-left  { left: 24px; }
-.carousel-arrow-right { right: 24px; }
+.brand-mark-text { font-weight: 700; letter-spacing: .22em; font-size: 14px; opacity: .92; }
 
-/* 轮播圆点 */
-.carousel-dots {
-  position: absolute; bottom: 52px; left: 50%; transform: translateX(-50%);
-  display: flex; gap: 12px; z-index: 3;
-}
-.carousel-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: rgba(255,255,255,0.32); cursor: pointer; transition: all 0.3s;
-}
-.carousel-dot.active { background: #fff; transform: scale(1.6); box-shadow: 0 0 10px rgba(255,255,255,0.5); }
-.carousel-dot:hover { background: rgba(255,255,255,0.7); }
-
-/* ============================================
-   左侧品牌区：左上角定位 left:8% top:18%
-   文字直接浮在遮罩上，无包裹色块
-   ============================================ */
-.brand-area {
-  position: absolute;
-  top: 18%;
-  left: 8%;
-  z-index: 2;
-  max-width: 380px;
-}
-
+.brand-body { position: relative; z-index: 2; }
 .brand-title {
-  font-size: 44px; font-weight: 900; color: #fff;
-  margin: 0 0 18px; letter-spacing: 0.06em; line-height: 1.2;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.4);
-  -webkit-font-smoothing: antialiased;
+  font-size: 46px; font-weight: 600; line-height: 1.18; margin: 0 0 20px;
+  text-shadow: 0 2px 20px rgba(0,0,0,.12);
+}
+.brand-tagline { font-size: 16px; opacity: .82; letter-spacing: .08em; margin: 0 0 32px; }
+.brand-points { list-style: none; display: flex; flex-direction: column; gap: 15px; }
+.brand-points li { display: flex; align-items: center; gap: 12px; font-size: 14.5px; opacity: .9; }
+.brand-points .dot { width: 7px; height: 7px; border-radius: 50%; background: #fff; opacity: .85; flex-shrink: 0; }
+
+.brand-foot { position: relative; z-index: 2; font-size: 12.5px; opacity: .6; letter-spacing: .02em; }
+
+/* ---------- 右侧表单 ---------- */
+.form-pane {
+  flex: 0 0 auto;
+  width: min(46%, 560px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+.form-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border: 1px solid var(--clay-200);
+  border-radius: 18px;
+  box-shadow: var(--shadow-lg);
+  padding: 42px 40px 32px;
+  animation: cardIn .5s cubic-bezier(.2,.7,.3,1);
+}
+@keyframes cardIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+.form-head { margin-bottom: 26px; }
+.form-title { font-size: 26px; font-weight: 700; color: var(--ink-900); letter-spacing: -.01em; margin: 0 0 6px; }
+.form-sub { font-size: 13.5px; color: var(--ink-500); margin: 0; }
+
+.field-label { display: block; font-size: 12.5px; font-weight: 600; color: var(--ink-500); margin: 2px 0 7px; letter-spacing: .02em; }
+.form-card :deep(.el-form-item) { margin-bottom: 16px; }
+.form-card :deep(.el-input__prefix) { color: var(--ink-400); }
+
+.reg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+
+.submit-btn {
+  width: 100%; height: 46px; margin-top: 8px;
+  font-size: 15px; font-weight: 650; letter-spacing: .3em;
+  border-radius: 11px;
 }
 
-.brand-tagline {
-  font-size: 16px; font-weight: 300; color: rgba(255,255,255,0.76);
-  margin: 0 0 16px; letter-spacing: 0.07em;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+.form-switch { text-align: center; margin-top: 20px; font-size: 13.5px; color: var(--ink-500); }
+.form-switch a { color: var(--coral); font-weight: 650; cursor: pointer; margin-left: 4px; }
+.form-switch a:hover { color: var(--coral-600); text-decoration: underline; }
+
+.form-notice {
+  margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--clay-150);
+  font-size: 11.5px; color: var(--ink-400); text-align: center; letter-spacing: .01em;
 }
 
-.brand-desc {
-  font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.42);
-  margin: 0; line-height: 1.8;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
+/* 表单切换动效 */
+.fade-slide-enter-active, .fade-slide-leave-active { transition: opacity .25s ease, transform .25s ease; }
+.fade-slide-enter-from { opacity: 0; transform: translateX(16px); }
+.fade-slide-leave-to { opacity: 0; transform: translateX(-16px); }
 
-/* ============================================
-   右侧登录卡片：靠右垂直居中 right:10%
-   固定宽度400px 半透明86% 圆角12px
-   ============================================ */
-.login-card {
-  position: absolute;
-  right: 10%;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  width: 400px;
-  background: rgba(255, 255, 255, 0.86);
-  border-radius: 12px;
-  padding: 32px 32px 28px;
-  box-shadow: 0 6px 36px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.05);
-}
-
-/* 安全警示 */
-.security-notice {
-  font-size: 12px; color: rgba(220, 100, 90, 0.9);
-  text-align: center; margin: 0 0 20px;
-  letter-spacing: 0.03em;
-}
-
-.card-title {
-  font-size: 21px; font-weight: 700; color: #1a1a2e;
-  text-align: center; margin: 0 0 28px; letter-spacing: 0.03em;
-}
-
-.form-body { min-height: 100px; }
-
-/* ============================================
-   输入框
-   ============================================ */
-.custom-input :deep(.el-input__wrapper) {
-  border-radius: 8px; box-shadow: 0 0 0 1px #d9d9d9;
-  background: #fff !important; transition: all 0.25s; padding: 4px 12px;
-}
-.custom-input :deep(.el-input__wrapper:hover) { box-shadow: 0 0 0 1px #b3b3b3; }
-.custom-input :deep(.el-input__wrapper.is-focus) { box-shadow: 0 0 0 2px rgba(24,144,255,0.25); }
-.custom-input :deep(.el-input__inner) { color: #262626 !important; font-size: 14px; }
-.custom-input :deep(.el-input__inner::placeholder) { color: #bfbfbf !important; font-size: 13px; }
-.input-icon { color: #1890ff !important; font-size: 17px; }
-.custom-input :deep(.el-input__suffix) { color: #8c8c8c; }
-.custom-input :deep(.el-input__suffix:hover) { color: #1890ff; }
-.el-form-item { margin-bottom: 24px; }
-
-/* ============================================
-   登录按钮
-   ============================================ */
-.login-btn {
-  width: 100%; height: 48px; font-size: 17px; font-weight: 700;
-  letter-spacing: 0.10em; border-radius: 8px !important;
-  background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%) !important;
-  border: none !important; color: #fff !important; transition: all 0.3s ease;
-}
-.login-btn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #096dd9 0%, #13c2c2 100%) !important;
-  transform: scale(1.02); box-shadow: 0 8px 24px rgba(24,144,255,0.35) !important;
-}
-.login-btn:active:not(:disabled) { transform: scale(0.98); }
-.login-btn:disabled {
-  background: #d9d9d9 !important; color: #fff !important;
-  cursor: not-allowed; box-shadow: none !important; transform: none !important;
-}
-
-/* 切换按钮 */
-.switch-area { text-align: center; margin-top: 14px; }
-.switch-btn {
-  font-weight: 600 !important; font-size: 14px !important; color: #fff !important;
-  background: #1890ff !important; border: none !important;
-  padding: 6px 22px !important; border-radius: 6px !important; transition: all 0.25s;
-}
-.switch-btn:hover {
-  background: #40a9ff !important; box-shadow: 0 4px 12px rgba(24,144,255,0.25) !important;
-  transform: translateY(-1px);
-}
-
-/* 页脚 */
-.login-footer {
-  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 2;
-  font-size: 12px; color: rgba(255,255,255,0.30); letter-spacing: 0.03em; white-space: nowrap;
-}
-
-/* 表单切换动画 */
-.form-switch-enter-active, .form-switch-leave-active { transition: all 0.25s ease; }
-.form-switch-enter-from { opacity: 0; transform: translateX(24px); }
-.form-switch-leave-to   { opacity: 0; transform: translateX(-24px); }
-
-/* ============================================
-   响应式：手机/平板 上下布局
-   ============================================ */
+/* ---------- 响应式 ---------- */
 @media (max-width: 900px) {
-  .brand-area {
-    position: static;
-    text-align: center; margin: 0 auto;
-    padding: 30px 20px 10px;
-    max-width: 100%;
-  }
-  .brand-title { font-size: 30px; }
-  .brand-tagline { font-size: 14px; }
-  .brand-desc { font-size: 12px; }
-
-  .login-card {
-    position: static;
-    transform: none;
-    margin: 0 auto;
-    width: min(400px, 90vw);
-    padding: 28px 22px 24px;
-  }
-
-  .carousel-arrow { display: none; }
-  .login-footer { font-size: 11px; bottom: 8px; }
+  .brand-pane { display: none; }
+  .form-pane { width: 100%; }
 }
 </style>

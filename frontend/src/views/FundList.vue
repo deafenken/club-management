@@ -196,12 +196,12 @@ const submitFund = async () => {
   flex: 1; background: #fff; border-radius: 8px; padding: 16px 20px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04); text-align: center;
 }
-.stat-num { display: block; font-size: 26px; font-weight: 700; color: #1890ff; line-height: 1.2; }
+.stat-num { display: block; font-size: 26px; font-weight: 700; color: #C96442; line-height: 1.2; }
 .stat-lbl { display: block; font-size: 12px; color: #888; margin-top: 2px; }
 
 .filter-row { display: flex; gap: 10px; margin-bottom: 14px; }
 
 .quick-links { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
-.ql { font-size: 12px; color: #1890ff; background: #e6f7ff; padding: 4px 12px; border-radius: 12px; text-decoration: none; transition: all 0.2s; }
+.ql { font-size: 12px; color: #C96442; background: #F6E9E2; padding: 4px 12px; border-radius: 12px; text-decoration: none; transition: all 0.2s; }
 .ql:hover { background: #bae7ff; transform: translateY(-1px); }
 </style>

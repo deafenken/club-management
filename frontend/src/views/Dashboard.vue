@@ -183,10 +183,10 @@ const today = computed(() => {
 
 // ===== 快捷功能 =====
 const quickCards = [
-  { label:'社团信息管理', desc:'管理社团档案与成员', icon:'OfficeBuilding', color:'#1890ff', bg:'#e6f7ff', path:'/clubs' },
+  { label:'社团信息管理', desc:'管理社团档案与成员', icon:'OfficeBuilding', color:'#C96442', bg:'#F6E9E2', path:'/clubs' },
   { label:'活动发布审批', desc:'创建与审核社团活动', icon:'Calendar',       color:'#52c41a', bg:'#f6ffed', path:'/activities' },
   { label:'成员招新管理', desc:'处理入社申请与审批', icon:'User',           color:'#fa8c16', bg:'#fff7e6', path:'/clubs' },
-  { label:'场地物资申领', desc:'预约场地与借用物资', icon:'Location',       color:'#36cfc9', bg:'#e6fffb', path:'/venues' },
+  { label:'场地物资申领', desc:'预约场地与借用物资', icon:'Location',       color:'#BE8A3C', bg:'#e6fffb', path:'/venues' },
   { label:'社团经费管理', desc:'经费申请与报销审批', icon:'Wallet',         color:'#597ef7', bg:'#f0f5ff', path:'/funds' },
   { label:'平台公告发布', desc:'发布系统通知与公告', icon:'Notification',   color:'#ff4d4f', bg:'#fff2f0', path:'/admin' },
 ]
@@ -200,7 +200,7 @@ const recentActivities = ref([])
 
 // ===== 迷你统计 =====
 const miniStats = ref([
-  { label:'社团总数', value:0, color:'#1890ff' },
+  { label:'社团总数', value:0, color:'#C96442' },
   { label:'活动总数', value:0, color:'#52c41a' },
   { label:'用户总量', value:0, color:'#fa8c16' },
 ])
@@ -310,7 +310,7 @@ const renderMiniChart = (rank) => {
       itemStyle: {
         borderRadius: [6,6,0,0],
         color: new echarts.graphic.LinearGradient(0,0,0,1,[
-          { offset:0, color:'#69c0ff' },{ offset:1, color:'#1890ff' }
+          { offset:0, color:'#E0A08A' },{ offset:1, color:'#C96442' }
         ])
       }
     }]
@@ -367,7 +367,7 @@ const reject = async (item) => {
    ============================================ */
 .welcome-banner {
   display: flex; align-items: center; justify-content: space-between;
-  background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%);
+  background: linear-gradient(135deg, #C96442 0%, #BE8A3C 100%);
   border-radius: 8px; padding: 22px 28px; margin-bottom: 24px; color: #fff;
 }
 .welcome-left h2 { margin: 0 0 4px; font-size: 20px; font-weight: 700; }
@@ -381,7 +381,7 @@ const reject = async (item) => {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 14px;
 }
-.section-title { margin: 0; font-size: 15px; font-weight: 700; color: #1a1a2e; }
+.section-title { margin: 0; font-size: 15px; font-weight: 700; color: #26241F; }
 .section-badge { font-size: 12px; color: #fa8c16; background: #fff7e6; padding: 2px 10px; border-radius: 10px; font-weight: 500; }
 
 /* ============================================
@@ -456,17 +456,17 @@ const reject = async (item) => {
 .act-left { display: flex; align-items: center; gap: 12px; }
 .act-date-box {
   width: 44px; height: 44px; border-radius: 8px;
-  background: #e6f7ff; display: flex; flex-direction: column;
+  background: #F6E9E2; display: flex; flex-direction: column;
   align-items: center; justify-content: center; flex-shrink: 0;
 }
-.act-date-day { font-size: 16px; font-weight: 700; color: #1890ff; line-height: 1; }
+.act-date-day { font-size: 16px; font-weight: 700; color: #C96442; line-height: 1; }
 .act-date-month { font-size: 10px; color: #8c8c8c; }
 .activity-item { cursor: pointer; }
 .act-title { font-size: 13px; font-weight: 600; color: #262626; display: block; }
 .act-club { font-size: 11px; color: #8c8c8c; }
 .act-right { display: flex; align-items: center; gap: 8px; }
 .act-arrow { color: #bfbfbf; font-size: 14px; transition: all 0.2s; }
-.activity-item:hover .act-arrow { color: #1890ff; transform: translateX(3px); }
+.activity-item:hover .act-arrow { color: #C96442; transform: translateX(3px); }
 
 /* 迷你统计 */
 .mini-stats { display: flex; gap: 10px; margin-bottom: 12px; }
@@ -499,7 +499,7 @@ const reject = async (item) => {
    6. 快速跳转
    ============================================ */
 .quick-links { display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
-.quick-link-pill { font-size: 12px; color: #1890ff; background: #e6f7ff; padding: 4px 12px; border-radius: 12px; text-decoration: none; transition: all 0.2s; }
+.quick-link-pill { font-size: 12px; color: #C96442; background: #F6E9E2; padding: 4px 12px; border-radius: 12px; text-decoration: none; transition: all 0.2s; }
 .quick-link-pill:hover { background: #bae7ff; transform: translateY(-1px); }
 
 /* ============================================

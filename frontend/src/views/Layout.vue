@@ -414,17 +414,18 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #F6F8FA;
+  background: var(--clay-50);
 }
 
 /* ============================================
-   顶部导航栏 — 浅蓝青主色
+   顶部导航栏 — 暖调深咖（Claude 风）
    ============================================ */
 .top-nav {
-  background: linear-gradient(135deg, #1890ff 0%, #2aadd4 60%, #36cfc9 100%);
+  background: #2B2622;
   flex-shrink: 0;
   z-index: 100;
-  box-shadow: 0 2px 12px rgba(24, 144, 255, 0.15);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  box-shadow: 0 1px 0 rgba(40,34,26,.04);
 }
 .nav-inner {
   display: flex;
@@ -474,14 +475,14 @@ onUnmounted(() => {
   border-bottom: 3px solid transparent;
 }
 .nav-item:hover {
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
   color: #fff;
 }
 .nav-item.active {
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(224, 138, 103, 0.16);
   color: #fff;
   font-weight: 700;
-  border-bottom-color: #fff;
+  border-bottom-color: #E08A67;
 }
 .nav-icon { font-size: 16px; }
 
@@ -501,7 +502,7 @@ onUnmounted(() => {
   color: #fff !important;
 }
 .notice-badge :deep(.el-badge__content) {
-  border: 2px solid #1890ff;
+  border: 2px solid #C96442;
 }
 .nav-user {
   font-size: 13px;
@@ -591,8 +592,8 @@ onUnmounted(() => {
   cursor: pointer; color: #909399; background: #f5f5f5;
   transition: all 0.2s; white-space: nowrap;
 }
-.notify-tab:hover { color: #1890ff; background: #e6f7ff; }
-.notify-tab.active { color: #fff; background: #1890ff; }
+.notify-tab:hover { color: #C96442; background: #F6E9E2; }
+.notify-tab.active { color: #fff; background: #C96442; }
 
 /* 列表 */
 .notify-list { flex: 1; overflow-y: auto; max-height: 360px; }
@@ -601,14 +602,14 @@ onUnmounted(() => {
   padding: 12px 6px; cursor: pointer; border-radius: 6px;
   transition: background 0.15s; border-bottom: 1px solid #fafafa;
 }
-.notify-item:hover { background: #f0f7ff; }
-.notify-item.unread { background: #f0f7ff; font-weight: 500; }
-.notify-item.unread .notify-title { color: #1890ff; }
+.notify-item:hover { background: #F8F0EB; }
+.notify-item.unread { background: #F8F0EB; font-weight: 500; }
+.notify-item.unread .notify-title { color: #C96442; }
 .notify-item.revoked { opacity: 0.5; cursor: default; }
 .notify-item.revoked:hover { background: transparent; }
 .notify-dot {
   width: 8px; height: 8px; border-radius: 50%;
-  background: #1890ff; flex-shrink: 0; margin-top: 6px;
+  background: #C96442; flex-shrink: 0; margin-top: 6px;
 }
 .notify-body { flex: 1; min-width: 0; }
 .notify-title {
@@ -653,7 +654,7 @@ onUnmounted(() => {
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #1890ff, #36cfc9);
+  background: linear-gradient(135deg, #C96442, #C96442);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -711,7 +712,7 @@ onUnmounted(() => {
   display: block;
   font-size: 18px;
   font-weight: 700;
-  color: #1890ff;
+  color: #C96442;
   line-height: 1.2;
 }
 .acct-stat-label {
@@ -727,7 +728,7 @@ onUnmounted(() => {
   .notify-header { color: #e5e5e5; border-bottom-color: #333; }
   .notify-tabs { border-bottom-color: #333; }
   .notify-tab { background: #333; color: #aaa; }
-  .notify-tab.active { background: #1890ff; color: #fff; }
+  .notify-tab.active { background: #C96442; color: #fff; }
   .notify-item { border-bottom-color: #2a2a2a; }
   .notify-item:hover { background: #252525; }
   .notify-item.unread { background: #1a2a3a; }

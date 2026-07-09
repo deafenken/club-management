@@ -153,7 +153,7 @@ function updateCell(index, key, value) {
 
 .subtotal-cell {
   font-weight: 600;
-  color: #1890ff;
+  color: #C96442;
 }
 
 .total-row {

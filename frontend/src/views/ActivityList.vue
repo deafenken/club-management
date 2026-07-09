@@ -123,7 +123,7 @@
           </div>
           <div class="detail-row" v-if="detailAct.status==='APPROVED'||detailAct.status==='ONGOING'">
             <span class="detail-label">签到码</span>
-            <span style="font-family:monospace;font-weight:700;color:#1890ff">{{ detailAct.checkinCode || '暂无' }}</span>
+            <span style="font-family:monospace;font-weight:700;color:#C96442">{{ detailAct.checkinCode || '暂无' }}</span>
           </div>
         </div>
         <div class="detail-desc" v-if="detailAct.description">
@@ -253,7 +253,7 @@ watch([page, statusFilter], fetch)
 .stat-card__icon {
   position: absolute; top: 12px; right: 14px; font-size: 28px; opacity: 0.15;
 }
-.stat-card--total  { background: linear-gradient(135deg, #e6f7ff 0%, #f0f5ff 100%); border: 1px solid #d6e4ff; }
+.stat-card--total  { background: linear-gradient(135deg, #F6E9E2 0%, #f0f5ff 100%); border: 1px solid #d6e4ff; }
 .stat-card--ongoing { background: linear-gradient(135deg, #f6ffed 0%, #f0fff0 100%); border: 1px solid #d9f7be; }
 .stat-card--pending { background: linear-gradient(135deg, #fff7e6 0%, #fffbe6 100%); border: 1px solid #ffe7ba; }
 
@@ -312,7 +312,7 @@ watch([page, statusFilter], fetch)
 
 /* --- 详情按钮：浅蓝底+深蓝字+蓝色边框 --- */
 .btn-detail {
-  background: #e6f7ff !important;
+  background: #F6E9E2 !important;
   color: #0958d9 !important;
   border: 1px solid #91caff !important;
 }
@@ -328,7 +328,7 @@ watch([page, statusFilter], fetch)
 
 /* --- 报名按钮：蓝青渐变主按钮 --- */
 .btn-enroll {
-  background: linear-gradient(135deg, #1677ff, #36cfc9) !important;
+  background: linear-gradient(135deg, #1677ff, #BE8A3C) !important;
   color: #fff !important; border: none !important;
 }
 .btn-enroll:hover {
@@ -371,11 +371,11 @@ watch([page, statusFilter], fetch)
 :deep(.el-pagination) { margin-top: 16px; justify-content: flex-end; }
 
 /* ===== 报名弹窗 ===== */
-.enroll-activity-info { background: #e6f7ff; border-radius: 10px; padding: 18px; margin-bottom: 18px; }
+.enroll-activity-info { background: #F6E9E2; border-radius: 10px; padding: 18px; margin-bottom: 18px; }
 .enroll-activity-title { font-size: 17px; font-weight: 700; color: #222; margin-bottom: 10px; }
 .enroll-activity-meta { display: flex; flex-wrap: wrap; gap: 14px; }
 .meta-item { display: flex; align-items: center; gap: 5px; font-size: 13px; color: #595959; }
-.meta-item .el-icon { color: #1890ff; }
+.meta-item .el-icon { color: #C96442; }
 
 /* ===== 活动详情弹窗 ===== */
 .detail-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }

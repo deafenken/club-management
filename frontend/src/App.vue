@@ -36,7 +36,7 @@ router.onError(() => { NProgress.done() })
 
 /* NProgress 配色 */
 #nprogress .bar {
-  background: linear-gradient(90deg, #4f46e5, #818cf8) !important;
+  background: linear-gradient(90deg, #C96442, #E0A08A) !important;
   height: 3px !important;
 }
 </style>

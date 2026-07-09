@@ -94,7 +94,7 @@ onMounted(fetch)
   flex: 1; max-width: 200px; background: #fff; border-radius: 8px; padding: 16px 20px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04); text-align: center;
 }
-.stat-num { display: block; font-size: 26px; font-weight: 700; color: #1890ff; line-height: 1.2; }
+.stat-num { display: block; font-size: 26px; font-weight: 700; color: #C96442; line-height: 1.2; }
 .stat-lbl { display: block; font-size: 12px; color: #888; margin-top: 2px; }
 
 .resource-layout { display: flex; gap: 14px; }
@@ -102,9 +102,9 @@ onMounted(fetch)
 .resource-sidebar { width: 180px; flex-shrink: 0; background: #fff; border-radius: 8px; padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); align-self: flex-start; }
 .sidebar-title { font-size: 13px; font-weight: 700; color: #222; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid #f0f0f0; }
 .sidebar-item { display: flex; justify-content: space-between; padding: 5px 0; font-size: 12px; color: #666; }
-.sidebar-cat-count { color: #1890ff; font-weight: 600; }
+.sidebar-cat-count { color: #C96442; font-weight: 600; }
 
 .quick-links { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
-.ql { font-size: 12px; color: #1890ff; background: #e6f7ff; padding: 4px 12px; border-radius: 12px; text-decoration: none; transition: all 0.2s; }
+.ql { font-size: 12px; color: #C96442; background: #F6E9E2; padding: 4px 12px; border-radius: 12px; text-decoration: none; transition: all 0.2s; }
 .ql:hover { background: #bae7ff; transform: translateY(-1px); }
 </style>
