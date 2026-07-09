@@ -13,6 +13,9 @@ request.interceptors.request.use(config => {
   return config
 })
 
+// 防止多个请求同时 401/403 时重复弹窗和重复跳转
+let redirecting = false
+
 // 响应拦截器：统一错误处理
 request.interceptors.response.use(
   res => {
@@ -21,10 +24,17 @@ request.interceptors.response.use(
     return Promise.reject(res.data)
   },
   err => {
-    if (err.response?.status === 401) {
+    const status = err.response?.status
+    // 未登录 / 令牌过期：清除本地会话并跳转登录页（不再弹出刺眼的错误码）
+    if (status === 401 || status === 403) {
       localStorage.removeItem('token')
       localStorage.removeItem('user')
-      window.location.href = '/login'
+      if (!redirecting && !location.pathname.startsWith('/login')) {
+        redirecting = true
+        ElMessage.warning('登录已过期，请重新登录')
+        window.location.href = '/login'
+      }
+      return Promise.reject(err)
     }
     const detail = err.response
       ? `${err.response.status} ${err.response.statusText} [${err.config?.method?.toUpperCase() || '?'} ${err.config?.url || '?'}]`

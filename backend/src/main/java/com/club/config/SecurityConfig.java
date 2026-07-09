@@ -51,6 +51,14 @@ public class SecurityConfig {
             .antMatchers("/api/teacher/**").hasAnyAuthority("TEACHER", "ADMIN")
             .anyRequest().authenticated()
             .and()
+            // 未登录/令牌过期时返回 401（而不是默认的 403），前端据此跳转登录页
+            .exceptionHandling()
+            .authenticationEntryPoint((request, response, ex) -> {
+                response.setStatus(401);
+                response.setContentType("application/json;charset=UTF-8");
+                response.getWriter().write("{\"code\":401,\"msg\":\"未登录或登录已过期\",\"data\":null}");
+            })
+            .and()
             .addFilterBefore(new JwtAuthFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
