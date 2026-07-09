@@ -2,7 +2,7 @@
   <div class="club-list-page">
     <!-- 页面头部 -->
     <div class="page-header">
-      <h1 class="page-title">社团管理</h1>
+      <span></span>
       <el-button type="primary" size="large" @click="clubWizardRef.open()">申请创建社团</el-button>
     </div>
 

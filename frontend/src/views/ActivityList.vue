@@ -2,7 +2,7 @@
   <div class="activity-page">
     <!-- 页头 -->
     <div class="page-header">
-      <h2 class="page-title">活动管理</h2>
+      <span></span>
       <el-button type="primary" @click="activityWizardRef.open()" v-if="canCreate">发布新活动</el-button>
     </div>
 

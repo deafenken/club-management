@@ -26,16 +26,15 @@
         </div>
       </nav>
 
-      <div class="sb-foot" @click="toggleCollapse">
-        <el-icon><component :is="collapsed ? 'Expand' : 'Fold'" /></el-icon>
-        <span v-show="!collapsed">收起菜单</span>
-      </div>
     </aside>
 
     <!-- ===== 右侧主区 ===== -->
     <div class="app-main">
       <header class="topbar">
         <div class="tb-left">
+          <button class="tb-collapse" @click="toggleCollapse" :title="collapsed ? '展开菜单' : '收起菜单'">
+            <el-icon :size="19"><component :is="collapsed ? 'Expand' : 'Fold'" /></el-icon>
+          </button>
           <h1 class="tb-title">{{ pageTitle }}</h1>
         </div>
 
@@ -442,6 +441,13 @@ onUnmounted(() => {
   border-bottom: 1px solid var(--clay-200);
   position: sticky; top: 0; z-index: 50;
 }
+.tb-left { display: flex; align-items: center; gap: 12px; }
+.tb-collapse {
+  width: 36px; height: 36px; border-radius: 9px; border: none; cursor: pointer;
+  background: transparent; color: var(--ink-500);
+  display: flex; align-items: center; justify-content: center; transition: all .15s;
+}
+.tb-collapse:hover { background: var(--clay-150); color: var(--coral); }
 .tb-title { font-size: 18px; font-weight: 700; color: var(--ink-900); letter-spacing: -.01em; margin: 0; }
 .tb-right { display: flex; align-items: center; gap: 8px; }
 

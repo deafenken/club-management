@@ -1,7 +1,7 @@
 <template>
   <div class="fund-page">
     <div class="page-header">
-      <h2 class="page-title">经费管理</h2>
+      <span></span>
       <el-button type="primary" @click="fundWizardRef.open()" :disabled="myClubs.length === 0">
         <el-icon><Plus /></el-icon> 申请经费
       </el-button>

@@ -1,8 +1,5 @@
 <template>
   <div class="resource-page">
-    <div class="page-header">
-      <h2 class="page-title">物资管理</h2>
-    </div>
 
     <!-- 统计卡片 -->
     <div class="stats-row">

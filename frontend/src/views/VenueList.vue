@@ -1,8 +1,5 @@
 <template>
   <div class="venue-page">
-    <div class="page-header">
-      <h2 class="page-title">场地预约</h2>
-    </div>
 
     <div class="category-tags">
       <button v-for="c in venueCats" :key="c" class="cat-tag" :class="{ active: venueCat === c }" @click="venueCat = c">{{ c }}</button>
