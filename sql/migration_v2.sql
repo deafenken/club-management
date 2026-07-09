@@ -207,6 +207,10 @@ CALL safe_add_column('club', 'reject_reason',        'TEXT COMMENT "驳回修改
 -- =====================================================
 CALL safe_add_column('sys_announcement', 'target', 'VARCHAR(30) DEFAULT "ALL" COMMENT "推送范围: ALL/PRESIDENT/STUDENT/ADMIN"');
 
+-- 九、sys_user 加 is_super 字段（总管理员/群主，仅其可移除其他管理员）
+CALL safe_add_column('sys_user', 'is_super', 'TINYINT DEFAULT 0 COMMENT "总管理员(群主):0否1是"');
+UPDATE sys_user SET is_super = 1 WHERE username = 'admin';
+
 -- =====================================================
 -- 清理
 -- =====================================================

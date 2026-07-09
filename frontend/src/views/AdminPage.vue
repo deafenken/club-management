@@ -80,21 +80,32 @@
       </el-tab-pane>
 
       <el-tab-pane label="用户管理" name="users">
+        <div class="users-hint" v-if="isSuperAdmin">
+          <el-icon><Star /></el-icon> 你是<b>总管理员</b>，可任命或移除其他管理员；普通管理员只能任命、不能相互移除。
+        </div>
         <el-table :data="users">
           <template #empty>暂无数据</template>
-          <el-table-column prop="username" label="用户名"/>
-          <el-table-column prop="realName" label="姓名"/>
-          <el-table-column prop="role" label="角色"/>
-          <el-table-column prop="college" label="学院"/>
-          <el-table-column label="状态">
+          <el-table-column prop="username" label="用户名" width="130"/>
+          <el-table-column prop="realName" label="姓名" width="110"/>
+          <el-table-column label="角色" width="120">
             <template #default="{row}">
-              <el-tag :type="row.status===1?'success':'danger'">{{row.status===1?'正常':'禁用'}}</el-tag>
+              <el-tag :type="roleTag(row)" effect="light" size="small">
+                <el-icon v-if="row.isSuper===1" style="vertical-align:-1px;margin-right:2px"><Star /></el-icon>{{ roleLabel(row) }}
+              </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="操作" width="100">
+          <el-table-column prop="college" label="学院"/>
+          <el-table-column label="状态" width="90">
             <template #default="{row}">
-              <el-button v-if="row.status===1" size="small" type="danger" @click="toggleUser(row.id,0)">禁用</el-button>
-              <el-button v-else size="small" type="success" @click="toggleUser(row.id,1)">启用</el-button>
+              <el-tag :type="row.status===1?'success':'danger'" size="small">{{row.status===1?'正常':'禁用'}}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="240">
+            <template #default="{row}">
+              <el-button v-if="row.role!=='ADMIN'" size="small" type="primary" plain @click="promoteAdmin(row)">设为管理员</el-button>
+              <el-button v-if="isSuperAdmin && row.role==='ADMIN' && row.isSuper!==1" size="small" type="warning" plain @click="demoteAdmin(row)">移除管理员</el-button>
+              <el-button v-if="row.status===1 && row.isSuper!==1" size="small" type="danger" plain @click="toggleUser(row.id,0)">禁用</el-button>
+              <el-button v-else-if="row.status!==1" size="small" type="success" plain @click="toggleUser(row.id,1)">启用</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -231,6 +242,32 @@ const toggleUser = async (userId, status) => {
   ElMessage.success(status===1?'用户已启用':'用户已禁用'); fetch()
 }
 
+// ====== 管理员任免（总管理员 = 群主）======
+const isSuperAdmin = user.isSuper === 1
+const roleTag = (row) => row.isSuper === 1 ? 'danger'
+  : ({ ADMIN:'danger', PRESIDENT:'warning', TEACHER:'success', STUDENT:'info' }[row.role] || 'info')
+const roleLabel = (row) => row.isSuper === 1 ? '总管理员'
+  : ({ ADMIN:'管理员', PRESIDENT:'社长', TEACHER:'指导老师', STUDENT:'学生' }[row.role] || row.role)
+
+const promoteAdmin = async (row) => {
+  try {
+    await ElMessageBox.confirm(`确定将「${row.realName}」设为系统管理员吗？`, '任命管理员', {
+      confirmButtonText:'确定任命', cancelButtonText:'取消', type:'warning'
+    })
+    await request.put('/user/promote', { userId: row.id })
+    ElMessage.success(`已将「${row.realName}」设为管理员`); fetch()
+  } catch(e) { /* cancelled */ }
+}
+const demoteAdmin = async (row) => {
+  try {
+    await ElMessageBox.confirm(`确定移除「${row.realName}」的管理员权限吗？该用户将被降为普通学生。`, '移除管理员', {
+      confirmButtonText:'确定移除', cancelButtonText:'取消', type:'warning'
+    })
+    await request.put('/user/demote', { userId: row.id })
+    ElMessage.success(`已移除「${row.realName}」的管理员权限`); fetch()
+  } catch(e) { /* cancelled */ }
+}
+
 const postAnn = async () => {
   await request.post('/announcement', ann); ElMessage.success('发布成功'); annDialog.value = false; fetch()
 }
@@ -256,6 +293,13 @@ watch(tab, (t) => {
 </script>
 
 <style scoped>
+.users-hint {
+  display: flex; align-items: center; gap: 7px;
+  margin-bottom: 14px; padding: 10px 14px; border-radius: 10px;
+  background: var(--coral-50); color: var(--coral-700);
+  border: 1px solid #EBBFB0; font-size: 13px;
+}
+.users-hint b { font-weight: 700; }
 .admin-page :deep(.el-tabs__item.is-active) {
   font-weight: 700;
   color: #C96442;

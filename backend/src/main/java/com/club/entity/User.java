@@ -17,6 +17,8 @@ public class User {
     private String role;        // STUDENT/PRESIDENT/TEACHER/ADMIN
     private String college;
     private Integer status;
+    @TableField("is_super")
+    private Integer isSuper;    // 总管理员(群主)：0否 1是，仅其可移除其他管理员
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
     @TableField(fill = FieldFill.INSERT_UPDATE)

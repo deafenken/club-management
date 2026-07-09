@@ -52,6 +52,7 @@ public class UserService extends ServiceImpl<UserMapper, User> {
         data.put("username", user.getUsername());
         data.put("realName", user.getRealName());
         data.put("role", user.getRole());
+        data.put("isSuper", user.getIsSuper());
         data.put("college", user.getCollege());
         data.put("phone", user.getPhone());
         data.put("createTime", user.getCreateTime());

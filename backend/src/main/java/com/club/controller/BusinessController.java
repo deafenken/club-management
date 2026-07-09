@@ -731,6 +731,40 @@ public class BusinessController {
         return Result.ok(status == 1 ? "用户已启用" : "用户已禁用");
     }
 
+    /** 设为管理员（拉管理员）：任意管理员均可将普通用户提升为管理员 */
+    @PutMapping("/user/promote")
+    public Result<?> promoteUser(@RequestBody Map<String, Object> body) {
+        if (!"ADMIN".equals(getCurrentUserRole())) return Result.fail(403, "权限不足");
+        if (body.get("userId") == null) return Result.fail("缺少用户ID");
+        Long userId = Long.valueOf(body.get("userId").toString());
+        User target = userMapper.selectById(userId);
+        if (target == null) return Result.fail("用户不存在");
+        if ("ADMIN".equals(target.getRole())) return Result.fail("该用户已是管理员");
+        target.setRole("ADMIN");
+        userMapper.updateById(target);
+        notificationService.notify(userId, "权限变更", "您已被设置为系统管理员", "SYSTEM");
+        return Result.ok("已将「" + target.getRealName() + "」设为管理员");
+    }
+
+    /** 移除管理员：仅总管理员（群主）可操作；不能移除总管理员本身 */
+    @PutMapping("/user/demote")
+    public Result<?> demoteUser(@RequestBody Map<String, Object> body) {
+        Long uid = getCurrentUserId();
+        User current = uid != null ? userMapper.selectById(uid) : null;
+        boolean isSuper = current != null && current.getIsSuper() != null && current.getIsSuper() == 1;
+        if (!isSuper) return Result.fail(403, "仅总管理员可移除管理员");
+        if (body.get("userId") == null) return Result.fail("缺少用户ID");
+        Long userId = Long.valueOf(body.get("userId").toString());
+        User target = userMapper.selectById(userId);
+        if (target == null) return Result.fail("用户不存在");
+        if (target.getIsSuper() != null && target.getIsSuper() == 1) return Result.fail("不能移除总管理员");
+        if (!"ADMIN".equals(target.getRole())) return Result.fail("该用户不是管理员");
+        target.setRole("STUDENT");
+        userMapper.updateById(target);
+        notificationService.notify(userId, "权限变更", "您的管理员权限已被移除", "SYSTEM");
+        return Result.ok("已移除「" + target.getRealName() + "」的管理员权限");
+    }
+
     // ====== 通知 ======
     /** 获取通知列表（分页+类型筛选，pageSize上限200） */
     @GetMapping("/notifications")
