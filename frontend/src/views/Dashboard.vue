@@ -187,7 +187,7 @@ const quickCards = [
   { label:'活动发布审批', desc:'创建与审核社团活动', icon:'Calendar',       color:'#52c41a', bg:'#f6ffed', path:'/activities' },
   { label:'成员招新管理', desc:'处理入社申请与审批', icon:'User',           color:'#fa8c16', bg:'#fff7e6', path:'/clubs' },
   { label:'场地物资申领', desc:'预约场地与借用物资', icon:'Location',       color:'#BE8A3C', bg:'#e6fffb', path:'/venues' },
-  { label:'社团经费管理', desc:'经费申请与报销审批', icon:'Wallet',         color:'#597ef7', bg:'#f0f5ff', path:'/funds' },
+  { label:'社团经费管理', desc:'经费申请与报销审批', icon:'Wallet',         color:'#B4694A', bg:'#f0f5ff', path:'/funds' },
   { label:'平台公告发布', desc:'发布系统通知与公告', icon:'Notification',   color:'#ff4d4f', bg:'#fff2f0', path:'/admin' },
 ]
 
@@ -500,7 +500,7 @@ const reject = async (item) => {
    ============================================ */
 .quick-links { display: flex; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
 .quick-link-pill { font-size: 12px; color: #C96442; background: #F6E9E2; padding: 4px 12px; border-radius: 12px; text-decoration: none; transition: all 0.2s; }
-.quick-link-pill:hover { background: #bae7ff; transform: translateY(-1px); }
+.quick-link-pill:hover { background: #F1D0C5; transform: translateY(-1px); }
 
 /* ============================================
    7. 页脚

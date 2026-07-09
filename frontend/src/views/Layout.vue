@@ -742,7 +742,7 @@ onUnmounted(() => {
   .acct-details { border-bottom-color: #2a2a2a; }
   .acct-stats { border-color: #333; }
   .acct-stat-item { background: #1d1d1d; border-right-color: #333; }
-  .acct-stat-num { color: #5cb8ff; }
+  .acct-stat-num { color: #D68264; }
   .acct-stat-label { color: #888; }
 }
 </style>

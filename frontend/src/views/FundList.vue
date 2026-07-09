@@ -203,5 +203,5 @@ const submitFund = async () => {
 
 .quick-links { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
 .ql { font-size: 12px; color: #C96442; background: #F6E9E2; padding: 4px 12px; border-radius: 12px; text-decoration: none; transition: all 0.2s; }
-.ql:hover { background: #bae7ff; transform: translateY(-1px); }
+.ql:hover { background: #F1D0C5; transform: translateY(-1px); }
 </style>

@@ -253,14 +253,14 @@ watch([page, statusFilter], fetch)
 .stat-card__icon {
   position: absolute; top: 12px; right: 14px; font-size: 28px; opacity: 0.15;
 }
-.stat-card--total  { background: linear-gradient(135deg, #F6E9E2 0%, #f0f5ff 100%); border: 1px solid #d6e4ff; }
+.stat-card--total  { background: linear-gradient(135deg, #F6E9E2 0%, #f0f5ff 100%); border: 1px solid #F6E9E2; }
 .stat-card--ongoing { background: linear-gradient(135deg, #f6ffed 0%, #f0fff0 100%); border: 1px solid #d9f7be; }
 .stat-card--pending { background: linear-gradient(135deg, #fff7e6 0%, #fffbe6 100%); border: 1px solid #ffe7ba; }
 
-.stat-card--total  .stat-num { color: #1677ff; }
+.stat-card--total  .stat-num { color: #C96442; }
 .stat-card--ongoing .stat-num { color: #52c41a; }
 .stat-card--pending .stat-num { color: #fa8c16; }
-.stat-card--total  .stat-card__icon { color: #1677ff; }
+.stat-card--total  .stat-card__icon { color: #C96442; }
 .stat-card--ongoing .stat-card__icon { color: #52c41a; }
 .stat-card--pending .stat-card__icon { color: #fa8c16; }
 
@@ -313,30 +313,30 @@ watch([page, statusFilter], fetch)
 /* --- 详情按钮：浅蓝底+深蓝字+蓝色边框 --- */
 .btn-detail {
   background: #F6E9E2 !important;
-  color: #0958d9 !important;
-  border: 1px solid #91caff !important;
+  color: #B4522F !important;
+  border: 1px solid #E0A08A !important;
 }
 .btn-detail:hover {
-  background: #bae0ff !important;
-  color: #003eb3 !important;
-  border-color: #69b1ff !important;
+  background: #F1D0C5 !important;
+  color: #994226 !important;
+  border-color: #D68264 !important;
   box-shadow: 0 6px 16px rgba(24,144,255,0.2) !important;
 }
 .btn-detail:active {
-  background: #91caff !important;
+  background: #E0A08A !important;
 }
 
 /* --- 报名按钮：蓝青渐变主按钮 --- */
 .btn-enroll {
-  background: linear-gradient(135deg, #1677ff, #BE8A3C) !important;
+  background: linear-gradient(135deg, #C96442, #BE8A3C) !important;
   color: #fff !important; border: none !important;
 }
 .btn-enroll:hover {
-  background: linear-gradient(135deg, #4096ff, #5cdbd3) !important;
+  background: linear-gradient(135deg, #C96442, #5cdbd3) !important;
   box-shadow: 0 6px 16px rgba(24,144,255,0.35) !important;
 }
 .btn-enroll:active {
-  background: linear-gradient(135deg, #0958d9, #20a39c) !important;
+  background: linear-gradient(135deg, #B4522F, #20a39c) !important;
 }
 
 /* --- 通过按钮：绿色底白字 --- */

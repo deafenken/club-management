@@ -61,7 +61,7 @@ const generate = async () => {
 </script>
 
 <style scoped>
-.markdown-body :deep(h2) { color:#303133; border-bottom:2px solid #409EFF; padding-bottom:6px; margin-top:20px }
+.markdown-body :deep(h2) { color:#303133; border-bottom:2px solid #C96442; padding-bottom:6px; margin-top:20px }
 .markdown-body :deep(h3) { color:#606266; margin-top:16px }
 .markdown-body :deep(table) { border-collapse:collapse; width:100% }
 .markdown-body :deep(th),.markdown-body :deep(td) { border:1px solid #ddd; padding:8px; text-align:left }

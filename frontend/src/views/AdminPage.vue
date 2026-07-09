@@ -258,11 +258,11 @@ watch(tab, (t) => {
 <style scoped>
 .admin-page :deep(.el-tabs__item.is-active) {
   font-weight: 700;
-  color: #409eff;
+  color: #C96442;
 }
 
 .admin-page :deep(.el-tabs__active-bar) {
-  background-color: #409eff;
+  background-color: #C96442;
   height: 3px;
 }
 
@@ -271,7 +271,7 @@ watch(tab, (t) => {
 }
 
 .admin-page :deep(.el-tabs__item:hover) {
-  color: #409eff;
+  color: #C96442;
 }
 
 .admin-page :deep(.el-table) {

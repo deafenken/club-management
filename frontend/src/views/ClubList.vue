@@ -360,7 +360,7 @@ watch(showMyClubs, (v) => { if (v) fetchMyClubs() })
 
 .category-tag:hover {
   background: #F6E9E2;
-  border-color: #91d5ff;
+  border-color: #E0A08A;
 }
 
 .category-tag--active {
@@ -385,7 +385,7 @@ watch(showMyClubs, (v) => { if (v) fetchMyClubs() })
 }
 
 .search-input :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 1px #409eff inset;
+  box-shadow: 0 0 0 1px #C96442 inset;
 }
 
 /* ===== 社团卡片网格 ===== */
