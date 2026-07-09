@@ -1,41 +1,54 @@
 <template>
-  <div class="layout-container">
-    <!-- ===== 顶部横向导航栏 ===== -->
-    <header class="top-nav">
-      <div class="nav-inner">
-        <!-- Logo -->
-        <div class="nav-logo" @click="$router.push('/')">
-          <svg viewBox="0 0 32 32" fill="none" width="26" height="26">
-            <circle cx="14" cy="12" r="5" fill="#fff" opacity="0.95"/>
-            <path d="M8 24c0-5 6-8 6-8s6 3 6 8v3H8v-3z" fill="#fff" opacity="0.9"/>
-            <circle cx="22" cy="12" r="4.5" fill="#fff" opacity="0.95"/>
-            <path d="M18 24c0-4.5 5-7 5-7s5 2.5 5 7v3H18v-3z" fill="#fff" opacity="0.9"/>
+  <div class="app-shell" :class="{ collapsed }">
+    <!-- ===== 左侧边栏 ===== -->
+    <aside class="sidebar">
+      <div class="sb-brand" @click="$router.push('/')">
+        <div class="sb-logo">
+          <svg viewBox="0 0 32 32" fill="none" width="20" height="20">
+            <circle cx="13" cy="12" r="4.6" fill="#fff" opacity=".96"/>
+            <path d="M7 24c0-4.6 6-7.4 6-7.4s6 2.8 6 7.4v2.6H7V24z" fill="#fff" opacity=".9"/>
+            <circle cx="22" cy="12" r="4.1" fill="#fff" opacity=".85"/>
+            <path d="M18 24c0-4.2 4.6-6.6 4.6-6.6s4.6 2.4 4.6 6.6v2.6H18V24z" fill="#fff" opacity=".8"/>
           </svg>
-          <span class="nav-logo-text">高校社团管理</span>
+        </div>
+        <span class="sb-brand-text" v-show="!collapsed">高校社团管理</span>
+      </div>
+
+      <nav class="sb-nav">
+        <div class="sb-group" v-for="g in visibleGroups" :key="g.title">
+          <div class="sb-group-title" v-show="!collapsed">{{ g.title }}</div>
+          <el-tooltip v-for="m in g.items" :key="m.path" :content="m.label" placement="right" :disabled="!collapsed" :offset="14">
+            <router-link :to="m.path" class="sb-item" :class="{ active: isActive(m.path) }">
+              <el-icon class="sb-icon"><component :is="m.icon" /></el-icon>
+              <span class="sb-label" v-show="!collapsed">{{ m.label }}</span>
+            </router-link>
+          </el-tooltip>
+        </div>
+      </nav>
+
+      <div class="sb-foot" @click="toggleCollapse">
+        <el-icon><component :is="collapsed ? 'Expand' : 'Fold'" /></el-icon>
+        <span v-show="!collapsed">收起菜单</span>
+      </div>
+    </aside>
+
+    <!-- ===== 右侧主区 ===== -->
+    <div class="app-main">
+      <header class="topbar">
+        <div class="tb-left">
+          <h1 class="tb-title">{{ pageTitle }}</h1>
         </div>
 
-        <!-- 菜单 -->
-        <nav class="nav-menu">
-          <router-link v-for="m in menus" :key="m.path" :to="m.path" class="nav-item" :class="{ active: isActive(m.path) }">
-            <el-icon class="nav-icon"><component :is="m.icon" /></el-icon>
-            <span>{{ m.label }}</span>
-          </router-link>
-        </nav>
-
-        <!-- 右侧 -->
-        <div class="nav-right">
+        <div class="tb-right">
           <!-- 通知铃铛 -->
           <el-popover placement="bottom-end" :width="400" trigger="click" @show="onPopoverShow" @hide="onPopoverHide">
             <template #reference>
               <el-badge :value="unreadCount" :hidden="unreadCount === 0" :max="99" class="notice-badge">
-                <el-button text class="notice-btn">
-                  <el-icon :size="20"><Bell /></el-icon>
-                </el-button>
+                <button class="tb-icon-btn"><el-icon :size="19"><Bell /></el-icon></button>
               </el-badge>
             </template>
 
             <div class="notify-panel">
-              <!-- 头部 + 分类标签 -->
               <div class="notify-header">
                 <span>消息通知</span>
                 <div class="notify-header-actions">
@@ -49,7 +62,6 @@
                   @click="switchFilter(t.value)">{{ t.label }}</span>
               </div>
 
-              <!-- 列表（滚动分页） -->
               <div class="notify-list" ref="notifyListRef" @scroll="onScroll" v-if="notifications.length > 0">
                 <div v-for="n in notifications" :key="n.id"
                   class="notify-item" :class="{ unread: n.isRead === 0, revoked: n.isRevoked === 1 }"
@@ -68,15 +80,14 @@
                 <div v-if="!hasMore && notifications.length > 0" class="notify-loading">没有更多了</div>
               </div>
 
-              <!-- 空状态 -->
               <div class="notify-empty" v-else>
-                <svg viewBox="0 0 120 120" width="80" height="80" class="empty-svg">
-                  <circle cx="60" cy="45" r="20" fill="#f0f0f0"/>
-                  <rect x="30" y="75" width="60" height="8" rx="4" fill="#f0f0f0"/>
-                  <rect x="40" y="90" width="40" height="8" rx="4" fill="#f5f5f5"/>
-                  <circle cx="55" cy="40" r="2" fill="#d9d9d9"/>
-                  <circle cx="65" cy="40" r="2" fill="#d9d9d9"/>
-                  <path d="M52 50 Q60 56 68 50" stroke="#d9d9d9" fill="none" stroke-width="1.5"/>
+                <svg viewBox="0 0 120 120" width="72" height="72" class="empty-svg">
+                  <circle cx="60" cy="45" r="20" fill="#EEEBE1"/>
+                  <rect x="30" y="75" width="60" height="8" rx="4" fill="#EEEBE1"/>
+                  <rect x="40" y="90" width="40" height="8" rx="4" fill="#F5F3EC"/>
+                  <circle cx="55" cy="40" r="2" fill="#D6D2C4"/>
+                  <circle cx="65" cy="40" r="2" fill="#D6D2C4"/>
+                  <path d="M52 50 Q60 56 68 50" stroke="#D6D2C4" fill="none" stroke-width="1.5"/>
                 </svg>
                 <p>暂无消息通知</p>
                 <span>审批结果、新公告等消息会显示在这里</span>
@@ -84,90 +95,52 @@
             </div>
           </el-popover>
 
-          <!-- 账户中心悬停弹窗 -->
-          <el-popover placement="bottom-end" :width="280" trigger="hover" :show-after="300" @show="fetchAccountInfo">
+          <!-- 账户中心 -->
+          <el-popover placement="bottom-end" :width="280" trigger="hover" :show-after="200" @show="fetchAccountInfo">
             <template #reference>
-              <div class="nav-user-area">
-                <span class="nav-user">
-                  <el-icon><User /></el-icon>
-                  {{ user.realName || '管理员' }}
-                </span>
-                <!-- 调试：直接在顶栏显示手机号和学院 -->
-                <span style="color:rgba(255,255,255,0.7);font-size:11px;margin-left:-4px">{{ user.phone || '无手机号' }}</span>
-                <el-tag :type="roleTypeMap[user.role]" effect="plain" size="small" round>
-                  {{ roleMap[user.role] || user.role }}
-                </el-tag>
+              <div class="tb-user">
+                <div class="tb-avatar">{{ (user.realName || 'U').charAt(0) }}</div>
+                <div class="tb-user-meta">
+                  <span class="tb-user-name">{{ user.realName || '用户' }}</span>
+                  <span class="tb-user-role">{{ roleMap[user.role] || user.role }}</span>
+                </div>
+                <el-icon class="tb-user-caret"><ArrowDown /></el-icon>
               </div>
             </template>
 
             <div class="account-popover">
-              <!-- 头像 + 姓名 -->
               <div class="acct-header">
-                <div class="acct-avatar">
-                  <el-icon :size="28"><UserFilled /></el-icon>
-                </div>
+                <div class="acct-avatar"><el-icon :size="28"><UserFilled /></el-icon></div>
                 <div class="acct-name-row">
-                  <span class="acct-name">{{ user.realName || '管理员' }}</span>
-                  <el-tag :type="roleTypeMap[user.role]" size="small" round>
-                    {{ roleMap[user.role] || user.role }}
-                  </el-tag>
+                  <span class="acct-name">{{ user.realName || '用户' }}</span>
+                  <el-tag :type="roleTypeMap[user.role]" size="small" round>{{ roleMap[user.role] || user.role }}</el-tag>
                 </div>
               </div>
-
-              <!-- 详细信息 -->
               <div class="acct-details">
-                <div class="acct-row">
-                  <el-icon><User /></el-icon>
-                  <span>用户名：{{ user.username || '-' }}</span>
-                </div>
-                <div class="acct-row">
-                  <el-icon><Phone /></el-icon>
-                  <span>{{ user.phone || userInfo.phone || '未绑定手机号' }}</span>
-                </div>
-                <div class="acct-row">
-                  <el-icon><School /></el-icon>
-                  <span>{{ user.college || userInfo.college || '未设置学院' }}</span>
-                </div>
-                <div class="acct-row">
-                  <el-icon><Clock /></el-icon>
-                  <span>注册时间：{{ formatDate(user.createTime || userInfo.createTime) }}</span>
-                </div>
+                <div class="acct-row"><el-icon><User /></el-icon><span>用户名：{{ user.username || '-' }}</span></div>
+                <div class="acct-row"><el-icon><Phone /></el-icon><span>{{ user.phone || userInfo.phone || '未绑定手机号' }}</span></div>
+                <div class="acct-row"><el-icon><School /></el-icon><span>{{ user.college || userInfo.college || '未设置学院' }}</span></div>
+                <div class="acct-row"><el-icon><Clock /></el-icon><span>注册时间：{{ formatDate(user.createTime || userInfo.createTime) }}</span></div>
               </div>
-
-              <!-- 统计卡片 -->
               <div class="acct-stats">
-                <div class="acct-stat-item">
-                  <span class="acct-stat-num">{{ stats.clubCount ?? '-' }}</span>
-                  <span class="acct-stat-label">我的社团</span>
-                </div>
-                <div class="acct-stat-item">
-                  <span class="acct-stat-num">{{ stats.activityCount ?? '-' }}</span>
-                  <span class="acct-stat-label">参与活动</span>
-                </div>
-                <div class="acct-stat-item">
-                  <span class="acct-stat-num">{{ stats.borrowCount ?? '-' }}</span>
-                  <span class="acct-stat-label">物资借用</span>
-                </div>
-                <div class="acct-stat-item">
-                  <span class="acct-stat-num">{{ stats.bookingCount ?? '-' }}</span>
-                  <span class="acct-stat-label">场地预约</span>
-                </div>
+                <div class="acct-stat-item"><span class="acct-stat-num">{{ stats.clubCount ?? '-' }}</span><span class="acct-stat-label">我的社团</span></div>
+                <div class="acct-stat-item"><span class="acct-stat-num">{{ stats.activityCount ?? '-' }}</span><span class="acct-stat-label">参与活动</span></div>
+                <div class="acct-stat-item"><span class="acct-stat-num">{{ stats.borrowCount ?? '-' }}</span><span class="acct-stat-label">物资借用</span></div>
+                <div class="acct-stat-item"><span class="acct-stat-num">{{ stats.bookingCount ?? '-' }}</span><span class="acct-stat-label">场地预约</span></div>
+              </div>
+              <div class="acct-logout" @click="logout">
+                <el-icon><SwitchButton /></el-icon> 退出登录
               </div>
             </div>
           </el-popover>
-
-          <el-button type="danger" text @click="logout" class="logout-btn">
-            <el-icon><SwitchButton /></el-icon> 退出
-          </el-button>
         </div>
-      </div>
-    </header>
+      </header>
 
-    <!-- ===== 主内容区 ===== -->
-    <main class="main-content">
-      <router-view />
-      <footer class="global-footer">© 2026 高校社团综合管理系统 版权所有</footer>
-    </main>
+      <main class="content">
+        <router-view />
+        <footer class="global-footer">© 2026 高校社团综合管理系统 · Powered by Spring Boot &amp; Vue 3</footer>
+      </main>
+    </div>
   </div>
 </template>
 
@@ -180,6 +153,15 @@ import request from '../api/request.js'
 const router = useRouter()
 const route = useRoute()
 const user = reactive(JSON.parse(localStorage.getItem('user') || '{}'))
+
+// ---- 侧边栏折叠 ----
+const collapsed = ref(localStorage.getItem('sb-collapsed') === '1')
+const toggleCollapse = () => {
+  collapsed.value = !collapsed.value
+  localStorage.setItem('sb-collapsed', collapsed.value ? '1' : '0')
+}
+
+const pageTitle = computed(() => route.meta?.title || '首页看板')
 
 const stats = reactive({ clubCount: null, activityCount: null, borrowCount: null, bookingCount: null })
 const statsLoaded = ref(false)
@@ -208,19 +190,33 @@ const formatDate = (t) => {
   return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0')
 }
 
-const allMenus = [
-  { path: '/',              label: '首页看板',  icon: 'DataAnalysis', roles: ['ADMIN','PRESIDENT','TEACHER','STUDENT'] },
-  { path: '/clubs',         label: '社团管理',  icon: 'OfficeBuilding', roles: ['ADMIN','PRESIDENT','TEACHER','STUDENT'] },
-  { path: '/activities',    label: '活动管理',  icon: 'Calendar',       roles: ['ADMIN','PRESIDENT','TEACHER','STUDENT'] },
-  { path: '/venues',        label: '场地预约',  icon: 'Location',       roles: ['ADMIN','PRESIDENT','TEACHER','STUDENT'] },
-  { path: '/resources',     label: '物资管理',  icon: 'Box',            roles: ['ADMIN','PRESIDENT','TEACHER','STUDENT'] },
-  { path: '/funds',         label: '经费管理',  icon: 'Wallet',         roles: ['ADMIN','PRESIDENT','TEACHER','STUDENT'] },
-  { path: '/ai-plan',       label: 'AI智能策划', icon: 'MagicStick',    roles: ['ADMIN','PRESIDENT','TEACHER','STUDENT'] },
-  { path: '/notify-prefs',  label: '通知偏好',  icon: 'Bell',           roles: ['ADMIN','PRESIDENT','TEACHER','STUDENT'] },
-  { path: '/my-applications',label: '我的全部申请',icon: 'Document',     roles: ['ADMIN','PRESIDENT','TEACHER','STUDENT'] },
-  { path: '/admin',         label: '管理员审批',  icon: 'Setting',        roles: ['ADMIN'] },
+// ---- 分组菜单 ----
+const menuGroups = [
+  { title: '概览', items: [
+    { path: '/', label: '首页看板', icon: 'DataAnalysis' },
+  ]},
+  { title: '社团业务', items: [
+    { path: '/clubs', label: '社团管理', icon: 'OfficeBuilding' },
+    { path: '/activities', label: '活动管理', icon: 'Calendar' },
+    { path: '/venues', label: '场地预约', icon: 'Location' },
+    { path: '/resources', label: '物资管理', icon: 'Box' },
+    { path: '/funds', label: '经费管理', icon: 'Wallet' },
+  ]},
+  { title: '智能工具', items: [
+    { path: '/ai-plan', label: 'AI 智能策划', icon: 'MagicStick' },
+  ]},
+  { title: '个人中心', items: [
+    { path: '/my-applications', label: '我的申请', icon: 'Document' },
+    { path: '/notify-prefs', label: '通知偏好', icon: 'Bell' },
+  ]},
+  { title: '系统管理', roles: ['ADMIN'], items: [
+    { path: '/admin', label: '审批中心', icon: 'Setting' },
+    { path: '/announce-manage', label: '公告管理', icon: 'ChatDotSquare' },
+  ]},
 ]
-const menus = computed(() => allMenus.filter(m => m.roles.includes(user.role || 'STUDENT')))
+const visibleGroups = computed(() =>
+  menuGroups.filter(g => !g.roles || g.roles.includes(user.role || 'STUDENT'))
+)
 
 const roleMap = { ADMIN: '管理员', PRESIDENT: '社长', TEACHER: '指导老师', STUDENT: '学生' }
 const roleTypeMap = { ADMIN: 'danger', PRESIDENT: 'warning', TEACHER: 'success', STUDENT: '' }
@@ -244,7 +240,6 @@ const hasMore = ref(true)
 const loadingMore = ref(false)
 const notifyListRef = ref(null)
 let pollTimer = null
-let visiblePollPaused = false
 
 const filterTabs = [
   { label: '全部', value: 'ALL' },
@@ -253,21 +248,13 @@ const filterTabs = [
   { label: '公告', value: 'ANNOUNCEMENT' },
 ]
 
-// 业务类型→路由映射
 const businessRouteMap = {
-  CLUB_APPROVAL: '/clubs',
-  MEMBER_APPROVAL: '/clubs',
-  JOIN_REQUEST: '/clubs',
-  ACTIVITY_APPROVAL: '/activities',
-  ACTIVITY_PENDING: '/activities',
-  VENUE_APPROVAL: '/venues',
-  VENUE_PENDING: '/venues',
-  RESOURCE_APPROVAL: '/resources',
-  RESOURCE_PENDING: '/resources',
-  FUND_APPROVAL: '/funds',
-  FUND_PENDING: '/funds',
-  ANNOUNCEMENT: '/',
-  SYSTEM: '/',
+  CLUB_APPROVAL: '/clubs', MEMBER_APPROVAL: '/clubs', JOIN_REQUEST: '/clubs',
+  ACTIVITY_APPROVAL: '/activities', ACTIVITY_PENDING: '/activities',
+  VENUE_APPROVAL: '/venues', VENUE_PENDING: '/venues',
+  RESOURCE_APPROVAL: '/resources', RESOURCE_PENDING: '/resources',
+  FUND_APPROVAL: '/funds', FUND_PENDING: '/funds',
+  ANNOUNCEMENT: '/', SYSTEM: '/',
 }
 
 const fetchUnreadCount = async () => {
@@ -285,20 +272,11 @@ const loadNotifications = async (reset = true) => {
       params: { page: currentPage.value, size: 20, filterType: filterType.value }
     })
     const records = res.data.records || []
-    if (reset) {
-      notifications.value = records
-    } else {
-      notifications.value = [...notifications.value, ...records]
-    }
+    notifications.value = reset ? records : [...notifications.value, ...records]
     hasMore.value = records.length >= 20
-  } catch (e) {
-    /* ignore */
-  } finally {
-    loadingMore.value = false
-  }
+  } catch (e) { /* ignore */ } finally { loadingMore.value = false }
 }
 
-// 滚动加载更多
 const onScroll = () => {
   const el = notifyListRef.value
   if (!el || loadingMore.value || !hasMore.value) return
@@ -308,35 +286,21 @@ const onScroll = () => {
   }
 }
 
-const switchFilter = (val) => {
-  filterType.value = val
-  loadNotifications(true)
-}
-
-const onPopoverShow = () => {
-  visiblePollPaused = true
-  loadNotifications(true)
-}
-const onPopoverHide = () => {
-  visiblePollPaused = false
-}
+const switchFilter = (val) => { filterType.value = val; loadNotifications(true) }
+const onPopoverShow = () => { loadNotifications(true) }
+const onPopoverHide = () => {}
 
 const handleNotifyClick = async (n) => {
   if (n.isRevoked === 1) return
-  // 标记已读
   if (n.isRead === 0) {
     try {
       await request.put(`/notification/read/${n.id}`)
       n.isRead = 1
       unreadCount.value = Math.max(0, unreadCount.value - 1)
-      // 跨标签同步
       try { new BroadcastChannel('notify-sync').postMessage({ type: 'read', id: n.id }) } catch (e) { /* */ }
     } catch (e) { /* ignore */ }
   }
-  // 跳转业务页面
-  const targetPath = businessRouteMap[n.businessType] || '/'
-  router.push(targetPath)
-  // 关闭popover（点击body空白处自然会关）
+  router.push(businessRouteMap[n.businessType] || '/')
 }
 
 const markAllRead = async () => {
@@ -358,42 +322,35 @@ const clearAll = async () => {
     ElMessage.success(res.data.msg || '已清空')
     notifications.value = []
     unreadCount.value = 0
-  } catch (e) { /* cancelled or error */ }
+  } catch (e) { /* cancelled */ }
 }
 
 const formatTime = (t) => {
   if (!t) return ''
   const d = new Date(t)
-  const now = new Date()
-  const diff = now - d
+  const diff = new Date() - d
   if (diff < 60000) return '刚刚'
   if (diff < 3600000) return Math.floor(diff / 60000) + '分钟前'
   if (diff < 86400000) return Math.floor(diff / 3600000) + '小时前'
-  const month = d.getMonth() + 1
-  const day = d.getDate()
-  return month + '/' + day + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-// 页面可见性控制轮询
 const handleVisibility = () => {
   if (document.hidden) {
     if (pollTimer) { clearInterval(pollTimer); pollTimer = null }
   } else {
     fetchUnreadCount()
-    pollTimer = setInterval(fetchUnreadCount, 30000)
+    if (!pollTimer) pollTimer = setInterval(fetchUnreadCount, 30000)
   }
 }
 
-// 跨标签同步
 const setupBroadcast = () => {
   try {
     const bc = new BroadcastChannel('notify-sync')
     bc.onmessage = (e) => {
-      if (e.data.type === 'read' || e.data.type === 'markAll') {
-        fetchUnreadCount()
-      }
+      if (e.data.type === 'read' || e.data.type === 'markAll') fetchUnreadCount()
     }
-  } catch (e) { /* Browser doesn't support BroadcastChannel */ }
+  } catch (e) { /* unsupported */ }
 }
 
 onMounted(() => {
@@ -402,7 +359,6 @@ onMounted(() => {
   document.addEventListener('visibilitychange', handleVisibility)
   setupBroadcast()
 })
-
 onUnmounted(() => {
   if (pollTimer) clearInterval(pollTimer)
   document.removeEventListener('visibilitychange', handleVisibility)
@@ -410,339 +366,205 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.layout-container {
+.app-shell { display: flex; height: 100vh; background: var(--clay-50); }
+
+/* ============================================
+   侧边栏
+   ============================================ */
+.sidebar {
+  width: 236px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--clay-200);
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  background: var(--clay-50);
+  transition: width .22s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
 }
+.app-shell.collapsed .sidebar { width: 68px; }
+
+.sb-brand {
+  display: flex; align-items: center; gap: 11px;
+  height: 60px; padding: 0 20px; cursor: pointer; flex-shrink: 0;
+  border-bottom: 1px solid var(--clay-150);
+}
+.sb-logo {
+  width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+  background: linear-gradient(135deg, #D9764F, #B4522F);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 6px rgba(201,100,66,.3);
+}
+.sb-brand-text { font-size: 15.5px; font-weight: 700; color: var(--ink-900); white-space: nowrap; letter-spacing: .01em; }
+
+.sb-nav { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 12px 12px 8px; }
+.sb-group { margin-bottom: 10px; }
+.sb-group-title {
+  font-size: 11px; font-weight: 700; color: var(--ink-400);
+  letter-spacing: .08em; padding: 8px 12px 6px; white-space: nowrap;
+}
+.sb-item {
+  display: flex; align-items: center; gap: 11px;
+  height: 40px; padding: 0 12px; margin-bottom: 2px;
+  border-radius: 9px; text-decoration: none; white-space: nowrap;
+  color: var(--ink-500); font-size: 14px; font-weight: 500;
+  position: relative; transition: background .15s, color .15s;
+}
+.sb-item:hover { background: var(--clay-100); color: var(--ink-900); }
+.sb-item.active { background: var(--coral-50); color: var(--coral); font-weight: 650; }
+.sb-item.active::before {
+  content: ''; position: absolute; left: -12px; top: 50%; transform: translateY(-50%);
+  width: 3px; height: 20px; border-radius: 0 3px 3px 0; background: var(--coral);
+}
+.sb-icon { font-size: 18px; flex-shrink: 0; }
+.app-shell.collapsed .sb-item { justify-content: center; padding: 0; }
+.app-shell.collapsed .sb-item.active::before { left: 0; }
+
+.sb-foot {
+  display: flex; align-items: center; gap: 10px;
+  height: 46px; padding: 0 22px; cursor: pointer; flex-shrink: 0;
+  border-top: 1px solid var(--clay-150); color: var(--ink-400);
+  font-size: 13px; transition: color .15s, background .15s;
+}
+.sb-foot:hover { color: var(--coral); background: var(--clay-100); }
+.app-shell.collapsed .sb-foot { justify-content: center; padding: 0; }
 
 /* ============================================
-   顶部导航栏 — 暖调深咖（Claude 风）
+   主区 + 顶栏
    ============================================ */
-.top-nav {
-  background: #2B2622;
-  flex-shrink: 0;
-  z-index: 100;
-  border-bottom: 1px solid rgba(255,255,255,.06);
-  box-shadow: 0 1px 0 rgba(40,34,26,.04);
-}
-.nav-inner {
-  display: flex;
-  align-items: center;
-  height: 56px;
-  padding: 0 24px;
-  max-width: 1400px;
-  margin: 0 auto;
-  width: 100%;
-}
-.nav-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  flex-shrink: 0;
-  margin-right: 20px;
-}
-.nav-logo-text {
-  font-size: 16px;
-  font-weight: 700;
-  color: #fff;
-  white-space: nowrap;
-  letter-spacing: 0.03em;
-}
+.app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 
-/* 菜单 */
-.nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  flex: 1;
-  overflow-x: auto;
+.topbar {
+  height: 60px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 26px;
+  background: rgba(250,249,245,.82);
+  backdrop-filter: saturate(180%) blur(10px);
+  border-bottom: 1px solid var(--clay-200);
+  position: sticky; top: 0; z-index: 50;
 }
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 8px 14px 5px;
-  border-radius: 8px;
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.85);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: all 0.2s;
-  font-weight: 500;
-  border-bottom: 3px solid transparent;
-}
-.nav-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
-}
-.nav-item.active {
-  background: rgba(224, 138, 103, 0.16);
-  color: #fff;
-  font-weight: 700;
-  border-bottom-color: #E08A67;
-}
-.nav-icon { font-size: 16px; }
+.tb-title { font-size: 18px; font-weight: 700; color: var(--ink-900); letter-spacing: -.01em; margin: 0; }
+.tb-right { display: flex; align-items: center; gap: 8px; }
 
-/* 右侧 */
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-  margin-left: 16px;
+.tb-icon-btn {
+  width: 38px; height: 38px; border-radius: 10px; border: none; cursor: pointer;
+  background: transparent; color: var(--ink-500);
+  display: flex; align-items: center; justify-content: center; transition: all .15s;
 }
-.notice-btn {
-  color: rgba(255, 255, 255, 0.9) !important;
-  padding: 4px;
-}
-.notice-btn:hover {
-  color: #fff !important;
-}
-.notice-badge :deep(.el-badge__content) {
-  border: 2px solid #C96442;
-}
-.nav-user {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.95);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 500;
-}
-.nav-user-area {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 8px;
-  transition: background 0.2s;
-}
-.nav-user-area:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-.logout-btn {
-  color: rgba(255, 255, 255, 0.85) !important;
-  font-size: 13px;
-}
-.logout-btn:hover {
-  color: #fff !important;
-}
+.tb-icon-btn:hover { background: var(--clay-150); color: var(--ink-900); }
 
-/* ============================================
-   主内容
-   ============================================ */
-.main-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 20px 24px;
-  max-width: 1400px;
-  margin: 0 auto;
-  width: 100%;
+.tb-user {
+  display: flex; align-items: center; gap: 9px;
+  padding: 5px 10px 5px 6px; border-radius: 11px; cursor: pointer;
+  transition: background .15s;
 }
+.tb-user:hover { background: var(--clay-150); }
+.tb-avatar {
+  width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+  background: linear-gradient(135deg, #D9764F, #B4522F); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 15px;
+}
+.tb-user-meta { display: flex; flex-direction: column; line-height: 1.25; }
+.tb-user-name { font-size: 13.5px; font-weight: 650; color: var(--ink-900); }
+.tb-user-role { font-size: 11.5px; color: var(--ink-400); }
+.tb-user-caret { color: var(--ink-400); font-size: 13px; }
+
+.content { flex: 1; overflow-y: auto; padding: 24px 28px; }
 .global-footer {
-  text-align: center;
-  padding: 24px 0 12px;
-  font-size: 12px;
-  color: #bfbfbf;
-  letter-spacing: 0.03em;
+  text-align: center; padding: 28px 0 12px;
+  font-size: 12px; color: var(--ink-400); letter-spacing: .02em;
 }
 
-/* 响应式 */
-@media (max-width: 900px) {
-  .nav-inner {
-    padding: 0 12px;
-  }
-  .nav-menu {
-    gap: 0;
-  }
-  .nav-item {
-    padding: 6px 8px;
-    font-size: 12px;
-    gap: 3px;
-  }
-  .nav-item span { display: none; }
-  .nav-logo-text { display: none; }
-  .main-content {
-    padding: 12px 10px;
-  }
+/* 视图过渡 */
+.view-fade-enter-active, .view-fade-leave-active { transition: opacity .2s ease, transform .2s ease; }
+.view-fade-enter-from { opacity: 0; transform: translateY(8px); }
+.view-fade-leave-to { opacity: 0; }
+
+/* 账户弹窗内的退出 */
+.acct-logout {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-top: 12px; padding: 9px; border-radius: 9px; cursor: pointer;
+  color: var(--rust); font-size: 13.5px; font-weight: 600;
+  background: var(--clay-100); transition: background .15s;
+}
+.acct-logout:hover { background: #F5E4E1; }
+
+/* 响应式：窄屏自动折叠 */
+@media (max-width: 820px) {
+  .sidebar { width: 68px; }
+  .sb-brand-text, .sb-label, .sb-group-title, .sb-foot span { display: none; }
+  .sb-item { justify-content: center; padding: 0; }
+  .tb-user-meta { display: none; }
+  .content { padding: 16px 14px; }
 }
 
 /* ============================================
-   通知面板
+   通知面板（弹窗内容，保留原样式）
    ============================================ */
 .notify-panel { max-height: 480px; display: flex; flex-direction: column; }
 .notify-header {
   display: flex; justify-content: space-between; align-items: center;
-  padding-bottom: 10px; border-bottom: 1px solid #f0f0f0;
-  font-weight: 600; font-size: 15px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--clay-150);
+  font-weight: 700; font-size: 15px; color: var(--ink-900);
 }
 .notify-header-actions { display: flex; gap: 4px; }
-
-/* 分类标签 */
-.notify-tabs {
-  display: flex; gap: 6px; padding: 10px 0;
-  border-bottom: 1px solid #f5f5f5;
-}
+.notify-tabs { display: flex; gap: 6px; padding: 10px 0; border-bottom: 1px solid var(--clay-150); }
 .notify-tab {
-  padding: 4px 12px; border-radius: 14px; font-size: 12px;
-  cursor: pointer; color: #909399; background: #f5f5f5;
-  transition: all 0.2s; white-space: nowrap;
+  padding: 4px 12px; border-radius: 14px; font-size: 12px; cursor: pointer;
+  color: var(--ink-500); background: var(--clay-100); transition: all .2s; white-space: nowrap;
 }
-.notify-tab:hover { color: #C96442; background: #F6E9E2; }
-.notify-tab.active { color: #fff; background: #C96442; }
-
-/* 列表 */
+.notify-tab:hover { color: var(--coral); background: var(--coral-50); }
+.notify-tab.active { color: #fff; background: var(--coral); }
 .notify-list { flex: 1; overflow-y: auto; max-height: 360px; }
 .notify-item {
   display: flex; align-items: flex-start; gap: 10px;
-  padding: 12px 6px; cursor: pointer; border-radius: 6px;
-  transition: background 0.15s; border-bottom: 1px solid #fafafa;
+  padding: 12px 6px; cursor: pointer; border-radius: 8px;
+  transition: background .15s; border-bottom: 1px solid var(--clay-150);
 }
-.notify-item:hover { background: #F8F0EB; }
-.notify-item.unread { background: #F8F0EB; font-weight: 500; }
-.notify-item.unread .notify-title { color: #C96442; }
-.notify-item.revoked { opacity: 0.5; cursor: default; }
+.notify-item:hover { background: var(--clay-100); }
+.notify-item.unread { background: var(--coral-50); }
+.notify-item.unread .notify-title { color: var(--coral); }
+.notify-item.revoked { opacity: .5; cursor: default; }
 .notify-item.revoked:hover { background: transparent; }
-.notify-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: #C96442; flex-shrink: 0; margin-top: 6px;
-}
+.notify-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--coral); flex-shrink: 0; margin-top: 6px; }
 .notify-body { flex: 1; min-width: 0; }
-.notify-title {
-  font-size: 14px; font-weight: 600; color: #303133; margin-bottom: 3px;
-  display: flex; align-items: center; gap: 6px;
-}
+.notify-title { font-size: 14px; font-weight: 600; color: var(--ink-900); margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
 .revoked-tag { font-size: 11px; }
 .notify-content {
-  font-size: 13px; color: #606266; line-height: 1.5;
-  display: -webkit-box; -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical; overflow: hidden;
+  font-size: 13px; color: var(--ink-500); line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.notify-time { font-size: 12px; color: #bbb; margin-top: 4px; }
-.notify-loading {
-  text-align: center; padding: 12px 0; font-size: 12px; color: #bbb;
-}
-
-/* 空状态 */
-.notify-empty {
-  text-align: center; padding: 32px 0; color: #bbb;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-}
-.notify-empty p { font-size: 14px; color: #999; margin: 0; }
-.notify-empty span { font-size: 12px; color: #ccc; }
-.empty-svg { opacity: 0.5; }
+.notify-time { font-size: 12px; color: var(--ink-400); margin-top: 4px; }
+.notify-loading { text-align: center; padding: 12px 0; font-size: 12px; color: var(--ink-400); }
+.notify-empty { text-align: center; padding: 32px 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.notify-empty p { font-size: 14px; color: var(--ink-500); margin: 0; }
+.notify-empty span { font-size: 12px; color: var(--ink-400); }
+.empty-svg { opacity: .7; }
 
 /* ============================================
    账户中心弹窗
    ============================================ */
-.account-popover {
-  padding: 4px 0;
-}
+.account-popover { padding: 4px 0; }
 .acct-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid #f0f0f0;
-  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 12px;
+  padding-bottom: 14px; border-bottom: 1px solid var(--clay-150); margin-bottom: 12px;
 }
 .acct-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #C96442, #C96442);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  flex-shrink: 0;
+  width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+  background: linear-gradient(135deg, #D9764F, #B4522F);
+  display: flex; align-items: center; justify-content: center; color: #fff;
 }
-.acct-name-row {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.acct-name {
-  font-size: 16px;
-  font-weight: 700;
-  color: #303133;
-}
+.acct-name-row { display: flex; flex-direction: column; gap: 4px; }
+.acct-name { font-size: 16px; font-weight: 700; color: var(--ink-900); }
 .acct-details {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #f5f5f5;
-  margin-bottom: 12px;
+  display: flex; flex-direction: column; gap: 8px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--clay-150); margin-bottom: 12px;
 }
-.acct-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #606266;
-}
-.acct-row .el-icon {
-  color: #909399;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-.acct-stats {
-  display: flex;
-  gap: 0;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #f0f0f0;
-}
-.acct-stat-item {
-  flex: 1;
-  text-align: center;
-  padding: 10px 0;
-  background: #fafafa;
-  border-right: 1px solid #f0f0f0;
-}
-.acct-stat-item:last-child {
-  border-right: none;
-}
-.acct-stat-num {
-  display: block;
-  font-size: 18px;
-  font-weight: 700;
-  color: #C96442;
-  line-height: 1.2;
-}
-.acct-stat-label {
-  display: block;
-  font-size: 11px;
-  color: #909399;
-  margin-top: 2px;
-}
-
-/* 暗黑模式适配 */
-@media (prefers-color-scheme: dark) {
-  .notify-panel { background: #1d1e1f; }
-  .notify-header { color: #e5e5e5; border-bottom-color: #333; }
-  .notify-tabs { border-bottom-color: #333; }
-  .notify-tab { background: #333; color: #aaa; }
-  .notify-tab.active { background: #C96442; color: #fff; }
-  .notify-item { border-bottom-color: #2a2a2a; }
-  .notify-item:hover { background: #252525; }
-  .notify-item.unread { background: #1a2a3a; }
-  .notify-title { color: #e5e5e5; }
-  .notify-content { color: #b0b0b0; }
-  .notify-empty p { color: #888; }
-  /* popover */
-  .acct-header { border-bottom-color: #333; }
-  .acct-name { color: #e5e5e5; }
-  .acct-row { color: #b0b0b0; }
-  .acct-details { border-bottom-color: #2a2a2a; }
-  .acct-stats { border-color: #333; }
-  .acct-stat-item { background: #1d1d1d; border-right-color: #333; }
-  .acct-stat-num { color: #D68264; }
-  .acct-stat-label { color: #888; }
-}
+.acct-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-500); }
+.acct-row .el-icon { color: var(--ink-400); font-size: 14px; flex-shrink: 0; }
+.acct-stats { display: flex; border-radius: 10px; overflow: hidden; border: 1px solid var(--clay-200); }
+.acct-stat-item { flex: 1; text-align: center; padding: 10px 0; background: var(--clay-100); border-right: 1px solid var(--clay-200); }
+.acct-stat-item:last-child { border-right: none; }
+.acct-stat-num { display: block; font-size: 18px; font-weight: 700; color: var(--coral); line-height: 1.2; }
+.acct-stat-label { display: block; font-size: 11px; color: var(--ink-400); margin-top: 2px; }
 </style>
